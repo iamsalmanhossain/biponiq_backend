@@ -1,0 +1,13 @@
+model VisitorLimitPackage {
+  id           String   @id @default(uuid())
+  name         String   // Package name, e.g., "Basic Topup"
+  visitorLimit Int      // How many visitors they get
+  price        Float    // Price in BDT
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  payments     SubscriptionPayment[]
+
+  @@map("visitor_limit_packages")
+}

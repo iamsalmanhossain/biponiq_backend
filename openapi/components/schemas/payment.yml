@@ -1,0 +1,215 @@
+InitiatePaymentRequest:
+  type: object
+
+  required:
+    - orderId
+
+  properties:
+    orderId:
+      type: string
+      example: test-order-1
+
+InitiatePaymentResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Payment session initiated successfully
+
+    data:
+      type: object
+
+      properties:
+        paymentId:
+          type: string
+          example: c31a8c98-d114-41ff-b2c2-ec313cb8451e
+
+        orderId:
+          type: string
+          example: test-order-1
+
+        transactionId:
+          type: string
+          example: TXN-1780726076914
+
+        gatewayPageURL:
+          type: string
+          example: https://sandbox.sslcommerz.com/EasyCheckOut/testcde375ad64d4c1c8b5dc3a90f8c1255b418
+
+SSLCommerzCallbackRequest:
+  type: object
+
+  required:
+    - tran_id
+    - status
+
+  properties:
+    tran_id:
+      type: string
+      example: TXN-1780892414149
+
+    status:
+      type: string
+      enum:
+        - VALID
+        - FAILED
+        - CANCELLED
+      example: VALID
+
+SSLCommerzIpnRequest:
+  type: object
+
+  required:
+    - tran_id
+    - status
+    - val_id
+    - amount
+    - currency
+
+  properties:
+    tran_id:
+      type: string
+      example: TXN-1780892414149
+
+    status:
+      type: string
+      enum:
+        - VALID
+        - FAILED
+        - CANCELLED
+      example: VALID
+
+    val_id:
+      type: string
+      example: 2606081020302ibAGSmfEsCGx0
+
+    amount:
+      type: string
+      example: '1500.00'
+
+    currency:
+      type: string
+      example: BDT
+
+PaymentCallbackResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Payment success callback received
+
+    data:
+      type: object
+
+      properties:
+        transactionId:
+          type: string
+          example: TXN-1780892414149
+
+        status:
+          type: string
+          example: VALID
+
+        message:
+          type: string
+          example: Payment received. Awaiting final verification.
+
+PaymentFailResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Payment fail callback received
+
+    data:
+      type: object
+
+      properties:
+        transactionId:
+          type: string
+          example: TXN-1780892414149
+
+        status:
+          type: string
+          example: FAILED
+
+        message:
+          type: string
+          example: Payment failed. Awaiting IPN confirmation.
+
+PaymentCancelResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Payment cancel callback received
+
+    data:
+      type: object
+
+      properties:
+        transactionId:
+          type: string
+          example: TXN-1780892414149
+
+        status:
+          type: string
+          example: CANCELLED
+
+        message:
+          type: string
+          example: Payment cancelled. Awaiting IPN confirmation.
+
+PaymentIpnResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Payment IPN received
+
+    data:
+      type: object
+
+      properties:
+        paymentId:
+          type: string
+          example: e8fb328f-94b6-4942-9324-2c60b78193dc
+
+        orderId:
+          type: string
+          nullable: true
+          example: ORD001
+
+        subscriptionId:
+          type: string
+          nullable: true
+          example: c2df2a6a-20ef-40a7-bad8-c8ee4fbf50a4
+
+        status:
+          type: string
+          example: VALID

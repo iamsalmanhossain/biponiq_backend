@@ -1,0 +1,230 @@
+VendorDashboardStats:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Vendor dashboard statistics retrieved successfully
+    data:
+      type: object
+      properties:
+        products:
+          type: object
+          properties:
+            totalProducts:
+              type: integer
+              example: 2
+            byStatus:
+              type: object
+              additionalProperties:
+                type: integer
+              example:
+                ACTIVE: 2
+                INACTIVE: 0
+            productsList:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: 123e4567-e89b-12d3-a456-426614174003
+                  name:
+                    type: string
+                    example: Wireless Ergonomic Mouse
+                  price:
+                    type: number
+                    example: 45
+                  stock:
+                    type: integer
+                    example: 10
+                  status:
+                    type: string
+                    example: ACTIVE
+        orders:
+          type: object
+          properties:
+            total:
+              type: integer
+              example: 3
+            byStatus:
+              type: object
+              additionalProperties:
+                type: integer
+              example:
+                DELIVERED: 2
+                PENDING: 1
+        financial:
+          type: object
+          properties:
+            totalEarnings:
+              type: number
+              example: 80.0
+            totalPendingEarnings:
+              type: number
+              example: 45.0
+            platformCommission:
+              type: number
+              example: 2.0
+            netVendorEarnings:
+              type: number
+              example: 78.0
+        codOrders:
+          type: integer
+          example: 1
+
+VendorOrdersResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Vendor orders retrieved successfully
+    data:
+      type: object
+      properties:
+        vendorOrders:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                example: 123e4567-e89b-12d3-a456-426614174001
+              status:
+                type: string
+                example: DELIVERED
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      example: 123e4567-e89b-12d3-a456-426614174004
+                    price:
+                      type: number
+                      example: 45
+                    quantity:
+                      type: integer
+                      example: 1
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 10
+            totalPages:
+              type: integer
+              example: 1
+
+VendorDeliveryChargeRequest:
+  type: object
+  required:
+    - insideCharge
+    - outsideCharge
+  properties:
+    insideCharge:
+      type: number
+      example: 60
+    outsideCharge:
+      type: number
+      example: 120
+
+VendorDeliveryChargeResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Vendor delivery charge is set
+    data:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174009
+        insideCharge:
+          type: number
+          example: 60
+        outsideCharge:
+          type: number
+          example: 120
+
+VendorCustomerListResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Customer list retrieved successfully
+    data:
+      type: object
+      properties:
+        customers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                example: 123e4567-e89b-12d3-a456-426614174003
+              name:
+                type: string
+                example: John Doe
+              email:
+                type: string
+                format: email
+                example: johndoe@example.com
+              phone:
+                type: string
+                example: '+8801700000000'
+              address:
+                type: object
+                properties:
+                  area:
+                    type: string
+                    example: Mirpur 10
+                  district:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: Dhaka
+                  division:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: Dhaka
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 10
+            totalCustomer:
+              type: integer
+              example: 1
+            totalPages:
+              type: integer
+              example: 1

@@ -1,0 +1,39 @@
+Division:
+  type: object
+
+  properties:
+    id:
+      type: string
+      format: uuid
+      example: '2f0fc178-7e70-44b3-a7b0-f2ac7475c8a1'
+
+    name:
+      type: string
+      example: 'Chattogram'
+
+  required:
+    - id
+    - name
+
+District:
+  type: object
+
+  properties:
+    id:
+      type: string
+      format: uuid
+      example: 'c1f72f91-8e8e-4a5f-9e6b-6f2f6f5b5f5a'
+
+    name:
+      type: string
+      example: "Cox's Bazar"
+
+    divisionId:
+      type: string
+      format: uuid
+      example: '2f0fc178-7e70-44b3-a7b0-f2ac7475c8a1'
+
+  required:
+    - id
+    - name
+    - divisionId

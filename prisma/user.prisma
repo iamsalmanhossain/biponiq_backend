@@ -1,0 +1,23 @@
+model User {
+  id               String          @id @default(uuid())
+  name             String
+  email            String          @unique
+  phone            String          @unique
+  password         String
+  role             UserRole
+  isDeleted        Boolean         @default(false)
+  deletedAt        DateTime?
+  isVerified       Boolean         @default(false)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  avatar           String?
+  imageKey         String?
+  provider         String?
+  admin            Admin?
+  sentChatMessages ChatMessage[]
+  vendor           Vendor?
+  trustedDevices   TrustedDevice[]
+
+  // admin যে সব vendor account এ impersonate করেছে তার log ([] মানেই zero-or-many)
+  adminImpersonations ImpersonationLog[] @relation("AdminImpersonations")
+}

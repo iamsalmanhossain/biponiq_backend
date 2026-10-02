@@ -1,0 +1,232 @@
+PublicProductResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      example: '64ccc716-2d07-4117-819f-b3c24ab49900'
+
+    name:
+      type: string
+      example: 'Wireless Bluetooth Headphones'
+
+    slug:
+      type: string
+      example: 'wireless-bluetooth-headphones'
+
+    description:
+      type: string
+      nullable: true
+      example: '<p>Experience premium sound quality with these wireless Bluetooth headphones.</p><ul><li>Bluetooth 5.3 connectivity</li><li>Up to 30 hours battery life</li><li>Noise cancellation support</li><li>Comfortable over-ear design</li></ul>'
+
+    price:
+      type: number
+      format: float
+      example: 1299.99
+
+    stock:
+      type: integer
+      example: 50
+
+    status:
+      type: string
+      example: 'ACTIVE'
+      description: 'ProductStatus enum (ACTIVE | INACTIVE | OUT_OF_STOCK)'
+
+    isDeleted:
+      type: boolean
+      example: false
+
+    deletedAt:
+      type: string
+      format: date-time
+      nullable: true
+      example: 2026-06-12T11:43:03.266Z
+
+    vendorId:
+      type: string
+      example: '85cb9ef0-238b-443b-a15f-a985703a5da8'
+
+    createdAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T14:39:30.521Z'
+
+    updatedAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T14:39:30.521Z'
+
+ProtectedProductResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      example: 'f347c537-b7f1-4951-9366-46d879b916a9'
+
+    name:
+      type: string
+      example: 'Wireless Bluetooth Headphones'
+
+    slug:
+      type: string
+      example: 'wireless-bluetooth-headphones'
+
+    description:
+      type: string
+      nullable: true
+      example: '<p>Experience premium sound quality with these wireless Bluetooth headphones.</p><ul><li>Bluetooth 5.3 connectivity</li><li>Up to 30 hours battery life</li><li>Noise cancellation support</li><li>Comfortable over-ear design</li></ul>'
+
+    price:
+      type: number
+      format: float
+      example: 1299.99
+
+    stock:
+      type: integer
+      example: 50
+
+    status:
+      type: string
+      example: 'ACTIVE'
+      description: 'ProductStatus enum (ACTIVE | INACTIVE | OUT_OF_STOCK)'
+
+    isDeleted:
+      type: boolean
+      example: false
+
+    deletedAt:
+      type: string
+      format: date-time
+      nullable: true
+      example: 2026-06-12T11:43:03.266Z
+
+    createdAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T14:39:30.521Z'
+
+    updatedAt:
+      type: string
+      format: date-time
+      example: '2026-06-12T11:53:35.218Z'
+
+    images:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uuid
+            example: 'd42c12bb-1f27-41f8-884e-c4d0afd91147'
+
+          imageUrl:
+            type: string
+            format: uri
+            example: 'https://example.com/images/wireless-bluetooth-headphone.jpg'
+
+          imageName:
+            type: string
+            nullable: true
+            example: Wireless Bluetooth Headphone
+
+          altText:
+            type: string
+            nullable: true
+            example: Wireless Bluetooth Headphone
+
+    vendor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '85cb9ef0-238b-443b-a15f-a985703a5da8'
+
+        shopName:
+          type: string
+          example: "John's Store"
+
+CreateProductRequest:
+  type: object
+
+  required:
+    - name
+    - slug
+    - price
+
+  properties:
+    name:
+      type: string
+      example: 'Wireless Bluetooth Headphones'
+
+    slug:
+      type: string
+      example: 'wireless-bluetooth-headphones'
+
+    description:
+      type: string
+      nullable: true
+      example: '<p>Experience premium sound quality with these wireless Bluetooth headphones.</p><ul><li>Bluetooth 5.3 connectivity</li><li>Up to 30 hours battery life</li><li>Noise cancellation support</li><li>Comfortable over-ear design</li></ul>'
+
+    price:
+      type: number
+      format: float
+      example: 1299.99
+
+    stock:
+      type: integer
+      example: 50
+
+    images:
+      type: array
+      items:
+        type: string
+        format: uri
+      example:
+        - 'https://example.com/images/wireless-bluetooth-headphone1.jpg'
+        - 'https://example.com/images/wireless-bluetooth-headphone2.jpg'
+
+UpdateProductRequest:
+  type: object
+
+  properties:
+    name:
+      type: string
+      example: 'Wireless Bluetooth Headphones'
+
+    slug:
+      type: string
+      example: 'wireless-bluetooth-headphones'
+
+    description:
+      type: string
+      nullable: true
+      example: '<p>Experience premium sound quality with these wireless Bluetooth headphones.</p><ul><li>Bluetooth 5.3 connectivity</li><li>Up to 30 hours battery life</li><li>Noise cancellation support</li><li>Comfortable over-ear design</li></ul>'
+
+    price:
+      type: number
+      format: float
+      example: 1299.99
+
+    stock:
+      type: integer
+      example: 50
+
+    status:
+      type: string
+      example: 'ACTIVE'
+      description: 'ProductStatus enum (ACTIVE | INACTIVE | OUT_OF_STOCK)'
+      enum:
+        - ACTIVE
+        - INACTIVE
+        - OUT_OF_STOCK
+
+    images:
+      type: array
+      items:
+        type: string
+        format: uri
+      example:
+        - 'https://example.com/images/wireless-bluetooth-headphone1.jpg'
+        - 'https://example.com/images/wireless-bluetooth-headphone2.jpg'

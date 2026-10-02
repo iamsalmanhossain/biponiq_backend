@@ -1,0 +1,88 @@
+Vendor:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+      example: '123e4567-e89b-12d3-a456-426614174000'
+
+    name:
+      type: string
+      example: 'Md. Salman Hossain'
+
+    email:
+      type: string
+      format: email
+      example: 'salman@example.com'
+
+    avatar:
+      type: string
+      example: 'https://i.pravatar.cc/300?img=1'
+
+    shopName:
+      type: string
+      example: 'Salman Tech Store'
+
+    shopLogo:
+      type: string
+      example: 'https://via.placeholder.com/logo.png'
+
+    shopAddress:
+      type: string
+      example: 'Kaliganj, Gazipur, Bangladesh'
+
+    subDomain:
+      type: string
+      example: 'salmantech'
+
+    phone:
+      type: string
+      example: '01712345671'
+
+    accountStatus:
+      type: string
+      enum:
+        - ACTIVE
+        - PENDING
+        - SUSPENDED
+        - BLOCKED
+      example: 'ACTIVE'
+
+    isVerified:
+      type: boolean
+      example: true
+
+VendorUpdate:
+  type: object
+  properties:
+    name:
+      type: string
+      example: 'Md. Salman Hossain'
+
+    avatar:
+      type: string
+      example: 'https://i.pravatar.cc/300?img=1'
+
+    shopName:
+      type: string
+      example: 'Salman Tech Store'
+
+    shopLogo:
+      type: string
+      example: 'https://via.placeholder.com/logo.png'
+
+    shopAddress:
+      type: string
+      example: 'Kaliganj, Gazipur, Bangladesh'
+
+    phone:
+      type: string
+      example: '01712345671'
+
+VendorAccountStatus:
+  type: string
+  enum:
+    - ACTIVE
+    - SUSPENDED
+    - BLOCKED
+    - CLOSED

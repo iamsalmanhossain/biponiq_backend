@@ -1,0 +1,61 @@
+model Vendor {
+  id        String @id @default(uuid())
+  userId    String @unique
+  addressId String
+
+  vendorCode String? @unique
+
+  avatar   String?
+  shopName String
+  shopLogo String?
+
+  subDomain        String           @unique
+  activeDomainType StoreDomainType?
+
+  purchasedDomains     PurchasedDomain[]
+  domainRegistrant     VendorDomainRegistrant?
+  accountStatus        VendorAccountStatus     @default(ACTIVE)
+  updatedAt            DateTime                @updatedAt
+  subscriptionPlanType SubscriptionPlanType    @default(FREE_TRIAL)
+  avatarKey            String?
+  bdCourierApiKey      String?
+  draftConfig          Json?
+  isOnboardingComplete Boolean                 @default(false)
+  pageConfig           Json?
+  pixelAccessToken     String?
+  pixelId              String?
+  pixelTestCode        String?
+  tiktokPixelId        String?
+  tiktokAccessToken    String?
+  tiktokTestCode       String?
+  shopLogoKey          String?
+  socialLinks          Json?
+  AIGenerationLog      AIGenerationLog[]
+  chatConversation     ChatConversation?
+  customDomain         CustomDomain?
+  deliveryCharge       DeliveryCharge?
+  pixelEvents          PixelEvent[]
+  tiktokPixelEvents    TiktokPixelEvent[]
+  address              Address                 @relation(fields: [addressId], references: [id])
+  user                 User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendorEarning        VendorEarning[]
+  visitorTrackings     VisitorTracking[]
+  affiliates           Affiliate[]
+  couponUsages         CouponUsage[]
+  products             Product[]
+  subscriptionPayments SubscriptionPayment[]
+  cashouts             VendorCashout[]
+  checkoutDraft        VendorCheckoutDraft?
+
+  coupons              VendorCoupon[]
+  subscriptions        VendorSubscription[]
+  couriers             VendorCourier[]
+  courierOrders        CourierOrder[]
+  
+  adminFraudCheckUsageCount Int     @default(0)
+
+  // এই vendor account এ admin কতবার impersonate করেছে তার log ([] মানেই zero-or-many, ? দরকার নেই)
+  impersonationLogs         ImpersonationLog[]
+}
+
+

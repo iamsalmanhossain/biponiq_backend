@@ -1,0 +1,43 @@
+model VendorCourier {
+  id          String          @id @default(uuid())
+  vendorId    String
+  provider    CourierProvider
+  credentials Json
+  isEnabled   Boolean         @default(true)
+  isDefault   Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  vendor      Vendor          @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@unique([vendorId, provider])
+}
+
+model CourierOrder {
+  id               String          @id @default(uuid())
+  vendorId         String
+  orderId          String?
+  provider         CourierProvider
+  consignmentId    String?
+  trackingCode     String?
+  status           String?
+  invoice          String
+  recipientName    String
+  recipientPhone   String
+  recipientAddress String
+  codAmount        Float           @default(0)
+  rawResponse      Json?
+  metadata         Json?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  vendor           Vendor          @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  order            Order?          @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([vendorId])
+  @@index([orderId])
+  @@index([consignmentId])
+  @@index([trackingCode])
+  @@index([invoice])
+}
+

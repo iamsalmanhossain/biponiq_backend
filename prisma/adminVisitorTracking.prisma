@@ -1,0 +1,11 @@
+model AdminVisitorTracking {
+  id         String   @id @default(uuid())
+  adminId    String
+  ip         String?
+  country    String?
+  city       String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  admin      Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+}

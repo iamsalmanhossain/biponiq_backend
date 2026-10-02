@@ -1,0 +1,139 @@
+vendorDashboardStats:
+  security:
+    - BearerAuth: []
+  operationId: vendorDashboardStats
+  tags:
+    - Vendor Dashboard
+  summary: Get Vendor Dashboard Statistics
+  description: Retrieve statistics and metrics for the vendor dashboard.
+  parameters:
+    - name: sort
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+      description: Sort products by creation date
+    - name: status
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [ACTIVE, INACTIVE, OUT_OF_STOCK]
+      description: Filter products by status
+  responses:
+    '200':
+      description: Vendor dashboard statistics retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/dashboard/vendor.yml#/VendorDashboardStats'
+    '401':
+      $ref: '../../components/responses/common.yml#/Unauthorized'
+    '500':
+      $ref: '../../components/responses/common.yml#/ServerError'
+
+getVendorOrders:
+  security:
+    - BearerAuth: []
+  operationId: getVendorOrders
+  tags:
+    - Vendor Dashboard
+  summary: Get Vendor Orders
+  description: Retrieve orders containing products owned by the vendor, with optional status filtering.
+  parameters:
+    - $ref: '../../components/parameters/pagination.yml#/page'
+    - $ref: '../../components/parameters/pagination.yml#/limit'
+    - name: sort
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+      description: Sort orders by creation date
+    - name: status
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, RETURNED, REFUNDED]
+      description: Filter orders by order status
+  responses:
+    '200':
+      description: Vendor orders retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/dashboard/vendor.yml#/VendorOrdersResponse'
+    '401':
+      $ref: '../../components/responses/common.yml#/Unauthorized'
+    '500':
+      $ref: '../../components/responses/common.yml#/ServerError'
+
+vendorDeliveryCharge:
+  security:
+    - BearerAuth: []
+  operationId: vendorDeliveryCharge
+  tags:
+    - Vendor Dashboard
+  summary: Set Vendor Delivery Charge
+  description: Set inside/outside district delivery charges for the vendor's shop.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/dashboard/vendor.yml#/VendorDeliveryChargeRequest'
+  responses:
+    '200':
+      description: Vendor delivery charge is set successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/dashboard/vendor.yml#/VendorDeliveryChargeResponse'
+    '401':
+      $ref: '../../components/responses/common.yml#/Unauthorized'
+    '500':
+      $ref: '../../components/responses/common.yml#/ServerError'
+
+getGuestCustomerList:
+  security:
+    - BearerAuth: []
+  operationId: getVendorCustomerList
+  tags:
+    - Vendor Dashboard
+  summary: Get Vendor Dashboard Guest Customer List
+  description: Retrieve a paginated list of guest customers who have purchased from the vendor.
+  parameters:
+    - $ref: '../../components/parameters/pagination.yml#/page'
+    - $ref: '../../components/parameters/pagination.yml#/limit'
+    - name: sort
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+      description: Sort customers by creation date
+    - name: division
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Filter customers by division name
+    - name: district
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Filter customers by district name
+  responses:
+    '200':
+      description: Customer list retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/dashboard/vendor.yml#/VendorCustomerListResponse'
+    '401':
+      $ref: '../../components/responses/common.yml#/Unauthorized'
+    '500':
+      $ref: '../../components/responses/common.yml#/ServerError'

@@ -1,0 +1,17 @@
+model PlatformSetting {
+  id                          String   @id @default("singleton")
+  enableCod                   Boolean  @default(true)
+  enableSsl                   Boolean  @default(true)
+  enableEps                   Boolean  @default(true)
+  enableMfs                   Boolean  @default(true)
+  enableFraudChecker          Boolean  @default(true)
+  enableCoupons               Boolean  @default(true)
+  enableDeliverySupport       Boolean  @default(true)
+  enableManagedDomainPurchase Boolean  @default(true)
+
+  adminBdCourierApiKey        String?
+  adminBdCourierApiLimit      Int?     @default(0)
+  adminBdCourierApiUsed       Int?     @default(0)
+
+  updatedAt                   DateTime @updatedAt
+}

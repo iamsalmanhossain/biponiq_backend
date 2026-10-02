@@ -1,0 +1,11 @@
+model BackupLog {
+  id       String  @id @default(uuid())
+  status   String // 'SUCCESS' or 'FAILED'
+  fileName String?
+  r2Key    String?
+  size     Int? // size in bytes
+  duration Int? // duration in ms
+
+  message   String?
+  createdAt DateTime @default(now())
+}

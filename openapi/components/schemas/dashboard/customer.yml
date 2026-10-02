@@ -1,0 +1,124 @@
+CustomerDashboardStats:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Customer dashboard data retrieved successfully
+    data:
+      type: object
+      properties:
+        profile:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 123e4567-e89b-12d3-a456-426614174005
+            name:
+              type: string
+              example: John Doe
+            email:
+              type: string
+              format: email
+              example: johndoe@example.com
+            address:
+              type: string
+              example: Sylhet, Bangladesh
+        orders:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 2
+            list:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: 123e4567-e89b-12d3-a456-426614174001
+                  totalPrice:
+                    type: number
+                    example: 100.0
+                  status:
+                    type: string
+                    example: DELIVERED
+                  customerName:
+                    type: string
+                    example: John Doe
+
+CustomerOrderDetailResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Order detail retrieved successfully
+    data:
+      type: object
+      properties:
+        order:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                example: 123e4567-e89b-12d3-a456-426614174001
+              customerName:
+                type: string
+                example: John Doe
+              totalPrice:
+                type: number
+                example: 100.0
+              status:
+                type: string
+                example: DELIVERED
+              customerAddress:
+                type: string
+                example: Sylhet, Bangladesh
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    product:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          example: 123e4567-e89b-12d3-a456-426614174003
+                        name:
+                          type: string
+                          example: Wireless Ergonomic Mouse
+                        price:
+                          type: number
+                          example: 45
+                        images:
+                          type: array
+                          items:
+                            type: string
+                          example: []
+                    quantity:
+                      type: integer
+                      example: 1
+              payment:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    paymentMethod:
+                      type: string
+                      example: COD
+                    paymentStatus:
+                      type: string
+                      example: PENDING

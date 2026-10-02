@@ -1,0 +1,204 @@
+AdminRegisterRequest:
+  type: object
+
+  required:
+    - name
+    - email
+    - password
+    - phone
+
+  properties:
+    name:
+      type: string
+      example: John Doe
+
+    email:
+      type: string
+      format: email
+      example: johndoe@gmail.com
+
+    password:
+      type: string
+      example: password123
+
+    phone:
+      type: string
+      example: "01712345678"
+
+    avatar:
+      type: string
+      nullable: true
+      example: https://example.com/avatar.jpg
+
+VendorRegisterRequest:
+  type: object
+
+  required:
+    - name
+    - email
+    - password
+    - phone
+    - area
+    - divisionName
+    - districtName
+    - shopName
+    - subDomain
+
+  properties:
+    name:
+      type: string
+      example: John Doe
+
+    email:
+      type: string
+      format: email
+      example: johndoe@gmail.com
+
+    password:
+      type: string
+      example: password123
+
+    phone:
+      type: string
+      example: "01712345678"
+
+    avatar:
+      type: string
+      nullable: true
+      example: https://example.com/avatar.jpg
+
+    area:
+      type: string
+      example: Dhanmondi
+
+    divisionName:
+      type: string
+      example: Dhaka
+
+    districtName:
+      type: string
+      example: Dhaka
+
+    shopName:
+      type: string
+      example: John's Store
+
+    shopLogo:
+      type: string
+      nullable: true
+      example: https://example.com/shop-logo.jpg
+
+    subDomain:
+      type: string
+      example: johnstore      
+
+RegisterResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Registration successful.Please verify your email.
+
+VerifyEmailRequest:
+  type: object
+
+  required:
+    - email
+    - code
+
+  properties:
+    email:
+      type: string
+      format: email
+      example: johndoe@gmail.com
+
+    code:
+      type: string
+      example: "123456"
+
+VerifyEmailResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Email verification successful
+
+LoginRequest:
+  type: object
+
+  required:
+    - email
+    - password
+
+  properties:
+    email:
+      type: string
+      format: email
+      example: johndoe@gmail.com
+
+    password:
+      type: string
+      example: password123
+
+LoginResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Login successful
+
+User:
+  type: object
+
+  properties:
+    id:
+      type: string
+      example: c1a2b3c4
+
+    name:
+      type: string
+      example: John Doe
+
+    email:
+      type: string
+      nullable: true
+      example: johndoe@gmail.com
+
+    phone:
+      type: string
+      example: "01712345678"
+
+    role:
+      type: string
+      enum:
+        - ADMIN
+        - VENDOR
+
+    isVerified:
+      type: boolean
+      example: true
+
+    createdAt:
+      type: string
+      format: date-time
+
+    updatedAt:
+      type: string
+      format: date-time
+
+

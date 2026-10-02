@@ -1,0 +1,12 @@
+model VisitorTracking {
+  id        String   @id @default(uuid())
+  vendorId  String
+  ip        String?
+  country   String?
+  city      String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  vendor    Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId, createdAt])
+}

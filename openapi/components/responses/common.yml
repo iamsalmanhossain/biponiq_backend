@@ -1,0 +1,112 @@
+Success:
+  description: Success
+
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common.yml#/SuccessResponse'
+
+
+BadRequest:
+  description: Bad Request
+
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common.yml#/ErrorResponse'
+
+      examples:
+        badRequest:
+          value:
+            success: false
+            message: Bad Request
+
+Unauthorized:
+  description: Unauthorized
+
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common.yml#/ErrorResponse'
+
+ValidationError:
+  description: Validation Error
+
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common.yml#/ErrorResponse'
+
+ServerError:
+  description: Internal Server Error
+
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common.yml#/ErrorResponse'
+
+Forbidden:
+  description: Account is not active
+
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common.yml#/ErrorResponse'
+
+      examples:
+        forbidden:
+          value:
+            success: false
+            message: Your account is not active yet. Please wait for approval.  
+
+Conflict:
+  description: Conflict
+
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common.yml#/ErrorResponse'
+
+      examples:
+        vendorExists:
+          value:
+            success: false
+            message: Vendor Already Exists!
+
+        emailExists:
+          value:
+            success: false
+            message: Email Already Exists!
+
+        subDomainExists:
+          value:
+            success: false
+            message: SubDomain Already Exists!
+
+InvalidVerificationCode:
+  description: Invalid or expired verification code
+
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common.yml#/ErrorResponse'
+
+      examples:
+        invalidCode:
+          value:
+            success: false
+            message: Invalid or expired verification code  
+
+LogoutSuccess:
+  description: Logout successful
+
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common.yml#/SuccessResponse'
+
+      examples:
+        logoutSuccess:
+          value:
+            success: true
+            message: Logout successfully                                        

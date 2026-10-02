@@ -1,0 +1,113 @@
+OrderResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Order placed successfully
+
+    data:
+      $ref: '../schemas/order.yml#/Order'
+
+SingleOrderResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Order retrieved successfully
+
+    data:
+      $ref: '../schemas/order.yml#/Order'
+
+OrderListResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Orders retrieved successfully
+
+    data:
+      type: array
+
+      items:
+        $ref: '../schemas/order.yml#/Order'
+
+    meta:
+      $ref: '../schemas/order.yml#/PaginationMeta'
+
+UpdateOrderStatusResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Order status updated successfully
+
+    data:
+      $ref: '../schemas/order.yml#/UpdateOrderStatusData'
+
+InvalidOrderStatusTransition:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: false
+
+    message:
+      type: string
+      example: Cannot change status from "PENDING" to "DELIVERED"
+
+    currentStatus:
+      type: string
+      example: PENDING
+
+    attemptedStatus:
+      type: string
+      example: DELIVERED
+
+    allowedTransitions:
+      type: array
+
+      items:
+        type: string
+
+      example:
+        - CONFIRMED
+        - CANCELLED
+
+TrackOrderResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Orders found
+
+    data:
+      type: array
+
+      items:
+        $ref: '../schemas/order.yml#/Order'

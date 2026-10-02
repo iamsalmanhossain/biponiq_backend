@@ -1,0 +1,11 @@
+model Address {
+  id             String          @id @default(uuid())
+  divisionId     String
+  districtId     String
+  area           String
+  district       District        @relation(fields: [districtId], references: [id])
+  division       Division        @relation(fields: [divisionId], references: [id])
+  guestCustomers GuestCustomer[]
+  orders         Order[]
+  vendors        Vendor[]
+}

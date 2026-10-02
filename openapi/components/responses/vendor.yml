@@ -1,0 +1,26 @@
+VendorNotFound:
+  description: Vendor Not Found
+  content:
+    application/json:
+      example:
+        success: false
+        statusCode: 404
+        message: Vendor not found
+
+ValidationError:
+  description: Validation Error
+  content:
+    application/json:
+      example:
+        success: false
+        statusCode: 400
+        message: Validation Failed
+
+InternalServerError:
+  description: Internal Server Error
+  content:
+    application/json:
+      example:
+        success: false
+        statusCode: 500
+        message: Something went wrong

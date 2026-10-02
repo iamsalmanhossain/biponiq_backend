@@ -1,0 +1,39 @@
+customerDashboardStats:
+  security:
+    - BearerAuth: []
+  operationId: customerDashboardStats
+  tags:
+    - Customer Dashboard
+  summary: Get Customer Dashboard Data
+  description: Retrieve profile information and order list/count for the customer dashboard.
+  responses:
+    '200':
+      description: Customer dashboard data retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/dashboard/customer.yml#/CustomerDashboardStats'
+    '401':
+      $ref: '../../components/responses/common.yml#/Unauthorized'
+    '500':
+      $ref: '../../components/responses/common.yml#/ServerError'
+
+getOrderDetail:
+  security:
+    - BearerAuth: []
+  operationId: getOrderDetail
+  tags:
+    - Customer Dashboard
+  summary: Get Customer Orders
+  description: Retrieve detailed information for all customer orders.
+  responses:
+    '200':
+      description: Order detail retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/dashboard/customer.yml#/CustomerOrderDetailResponse'
+    '401':
+      $ref: '../../components/responses/common.yml#/Unauthorized'
+    '500':
+      $ref: '../../components/responses/common.yml#/ServerError'

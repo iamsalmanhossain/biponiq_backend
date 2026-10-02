@@ -1,0 +1,20 @@
+model Affiliate {
+  id       String  @id @default(uuid())
+  name     String
+  email    String  @unique
+  password String
+  phone    String?
+  vendorId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payoutMethods AffiliatePayoutMethod[]
+  payouts       AffiliatePayout[]
+
+  vendor       Vendor?        @relation(fields: [vendorId], references: [id])
+  coupons      VendorCoupon[]
+  adminCoupons Coupon[]
+
+  @@map("affiliates")
+}

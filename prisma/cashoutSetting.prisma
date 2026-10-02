@@ -1,0 +1,10 @@
+model CashoutSetting {
+  id                   String   @id @default(uuid())
+  chargeRate           Decimal  @db.Decimal(5, 2)
+  minimumCashoutAmount Decimal  @db.Decimal(10, 2)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  allowedMethods       String[] @default(["BKASH", "NAGAD", "ROCKET", "BANK_TRANSFER"])
+
+  @@map("cashout_settings")
+}

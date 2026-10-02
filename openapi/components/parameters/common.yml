@@ -1,0 +1,24 @@
+IdParam:
+  name: id
+  in: path
+  required: true
+  description: Resource ID
+  schema:
+    type: string
+    example: '683f4d6b2e9a5f0012345678'
+
+ApplicationIdParams:
+  name: applicationId
+  in: path
+  required: true
+  description: Application ID
+  schema:
+    type: string
+    example: 'APP-2026-0001'
+
+RefreshTokenCookie:
+  in: cookie
+  name: refreshToken
+  required: true
+  schema:
+    type: string

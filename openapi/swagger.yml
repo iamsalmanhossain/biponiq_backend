@@ -1,0 +1,4298 @@
+openapi: 3.0.0
+info:
+  title: E-Commerce API
+  version: 1.0.0
+  description: REST API Documentation
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: http://localhost:5000/api/v1
+    description: local host
+  - url: https://server-squad-backend.vercel.app/api/v1
+    description: production level
+tags:
+  - name: Admin Authentication
+    description: Admin authentication APIs
+  - name: Vendor Authentication
+    description: Vendor authentication APIs
+  - name: Authentication
+    description: Authentication APIs
+  - name: Order
+    description: Order APIs
+  - name: Product
+    description: Product APIs
+  - name: Payment
+    description: Payment APIs
+  - name: Admin
+    description: Admin APIs
+  - name: Image Upload
+    description: Image Upload APIs
+  - name: Dashboard
+    description: Dashboard APIs (Admin, Vendor, and Customer views)
+  - name: Location
+    description: Division and District APIs
+  - name: Subscription
+    description: Subscription plan, checkout, trial, and payment confirmation APIs
+paths:
+  /auth/admin/register:
+    post:
+      security: []
+      operationId: registerAdmin
+      tags:
+        - Admin Authentication
+      summary: Register Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminRegisterRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/vendor/register:
+    post:
+      security: []
+      operationId: registerVendor
+      tags:
+        - Vendor Authentication
+      summary: Register Vendor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorRegisterRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/verify-email:
+    post:
+      security: []
+      operationId: verifyEmail
+      tags:
+        - Authentication
+      summary: Verify Email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmailRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/InvalidVerificationCode'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/login:
+    post:
+      security: []
+      operationId: login
+      tags:
+        - Authentication
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth/refresh-token:
+    post:
+      security: []
+      operationId: refreshToken
+      tags:
+        - Authentication
+      summary: Refresh Access Token
+
+      parameters:
+        - in: cookie
+          name: refreshToken
+          required: true
+          schema:
+          type: string
+
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags:
+        - Authentication
+      summary: Logout User
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/LogoutSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /orders:
+    post:
+      security: []
+      operationId: placeOrder
+      tags:
+        - Order
+      summary: Place Order
+      description: Create a new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceOrderRequest'
+      responses:
+        '201':
+          description: Order placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Bad Request
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    get:
+      operationId: getAllOrderList
+      security:
+        - BearerAuth: []
+      tags:
+        - Order
+      summary: Get All Orders
+      description: |
+        Retrieve orders based on authenticated user role.
+
+        Allowed Roles:
+        - ADMIN
+        - VENDOR
+
+        Role Behavior:
+        - ADMIN can view all orders.
+        - VENDOR can view only orders containing their own products.
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Forbidden
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /orders/{id}:
+    get:
+      operationId: getSingleOrder
+      security:
+        - BearerAuth: []
+      tags:
+        - Order
+      summary: Get Single Order
+      description: Retrieve a single order by order id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          example: 000e7811-84e9-42c2-80f5-24f239ce0002
+      responses:
+        '200':
+          description: Order retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleOrderResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Forbidden
+        '404':
+          description: Order not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /orders/{orderId}/status:
+    patch:
+      operationId: updateOrderStatus
+      security:
+        - BearerAuth: []
+      tags:
+        - Order
+      summary: Update Order Status
+      description: |
+        Update an order status.
+
+        Allowed Role:
+        - VENDOR
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+          example: 000e7811-84e9-42c2-80f5-24f239ce0002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderStatusRequest'
+      responses:
+        '200':
+          description: Order status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateOrderStatusResponse'
+        '400':
+          description: Invalid status transition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidOrderStatusTransition'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Only ADMIN and VENDOR can update order status
+        '404':
+          description: Order not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /orders/track:
+    get:
+      operationId: trackOrder
+      security: []
+      tags:
+        - Order
+      summary: Track Guest Orders
+      description: |
+        Public endpoint.
+
+        Track orders using guest customer token.
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+          example: eb75bec8-ccf8-44c1-9f4a-93e9d3845176
+      responses:
+        '200':
+          description: Orders found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackOrderResponse'
+        '400':
+          description: Guest token is required
+        '404':
+          description: No orders found for this tracking ID
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /products/public:
+    get:
+      operationId: getPublicProducts
+      security: []
+      tags:
+        - Product
+      summary: Get public products
+      description: Get paginated public products with filters
+      responses:
+        '200':
+          description: Public products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Server Error
+  /products:
+    get:
+      operationId: getProducts
+      security: []
+      tags:
+        - Product
+      summary: Get all products (Admin)
+      description: Admin only - get all products
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Server Error
+    post:
+      tags:
+        - Product
+      operationId: createProduct
+      summary: Create product
+      description: Vendor creates a new product
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductResponse'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '401':
+          description: Unauthorized
+  /products/my-products:
+    get:
+      operationId: getVendorProducts
+      security: []
+      tags:
+        - Product
+      summary: Get vendor products
+      description: Get products created by logged-in vendor
+      responses:
+        '200':
+          description: Vendor products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Server Error
+  /products/{id}:
+    get:
+      operationId: getProduct
+      security: []
+      tags:
+        - Product
+      summary: Get single product
+      description: Get product by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetProductResponse'
+        '404':
+          description: Product not found
+    patch:
+      tags:
+        - Product
+      operationId: updateProduct
+      summary: Update product
+      description: Vendor updates own product
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductResponse'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Product not found
+    delete:
+      tags:
+        - Product
+      operationId: deleteProduct
+      summary: Delete product
+      description: Vendor deletes own product
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Product not found
+  /payment/initiate:
+    post:
+      security: []
+      operationId: initiatePayment
+      tags:
+        - Payment
+      summary: Initiate SSLCommerz Payment
+      description: Create a payment session for an existing order and return SSLCommerz GatewayPageURL.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitiatePaymentRequest'
+      responses:
+        '200':
+          description: Payment session initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitiatePaymentResponse'
+        '404':
+          description: Order not found
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /payment/success:
+    post:
+      security: []
+      operationId: paymentSuccessCallback
+      tags:
+        - Payment
+      summary: SSLCommerz Success Callback
+      description: Receive SSLCommerz success callback. Final payment verification is handled by IPN.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SSLCommerzCallbackRequest'
+      responses:
+        '200':
+          description: Payment success callback received
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentCallbackResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /payment/fail:
+    post:
+      security: []
+      operationId: paymentFailCallback
+      tags:
+        - Payment
+      summary: SSLCommerz Fail Callback
+      description: Receive SSLCommerz fail callback. Final failed status update is handled by IPN.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SSLCommerzCallbackRequest'
+      responses:
+        '200':
+          description: Payment fail callback received
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentFailResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /payment/cancel:
+    post:
+      security: []
+      operationId: paymentCancelCallback
+      tags:
+        - Payment
+      summary: SSLCommerz Cancel Callback
+      description: Receive SSLCommerz cancel callback. Final cancelled status update is handled by IPN.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SSLCommerzCallbackRequest'
+      responses:
+        '200':
+          description: Payment cancel callback received
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentCancelResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /payment/ipn:
+    post:
+      security: []
+      operationId: paymentIpnCallback
+      tags:
+        - Payment
+      summary: SSLCommerz IPN Callback
+      description: Receive SSLCommerz IPN callback, validate transaction with SSLCommerz validation API, and update order payment or subscription payment status.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SSLCommerzIpnRequest'
+      responses:
+        '200':
+          description: Payment IPN received
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentIpnResponse'
+        '400':
+          description: Invalid SSLCommerz payment status, missing validation ID, validation failed, or amount mismatch
+        '404':
+          description: Order payment or subscription payment not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /cashout/vendor/{vendorId}/summary:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getCashoutSummary
+      tags:
+        - Cashout
+      summary: Get vendor cashout summary
+      description: Get vendor lifetime earning calculated from paid order items, pending cashout amount, lifetime cashout amount, available balance, and withdrawable balance.
+      parameters:
+        - in: path
+          name: vendorId
+          required: true
+          schema:
+            type: string
+          example: d59bc444-d489-48e3-a196-a99a25389918
+      responses:
+        '200':
+          description: Cashout summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashoutSummaryResponse'
+        '404':
+          description: Vendor or cashout setting not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /cashout/vendor/{vendorId}/request:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: createCashout
+      tags:
+        - Cashout
+      summary: Create vendor cashout request
+      description: Create a cashout request for a vendor. Requested amount will be locked while status is PENDING.
+      parameters:
+        - in: path
+          name: vendorId
+          required: true
+          schema:
+            type: string
+          example: d59bc444-d489-48e3-a196-a99a25389918
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCashoutRequest'
+      responses:
+        '201':
+          description: Cashout request created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCashoutResponse'
+        '400':
+          description: Minimum cashout, pending request, or insufficient balance validation error
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /cashout/admin/cashouts:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getCashoutsForAdmin
+      tags:
+        - Cashout
+      summary: Get cashout requests for admin
+      description: Get cashout requests for admin with pagination, status filter, method filter, and search by cashoutId or vendorId.
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: number
+          example: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+          example: 10
+        - in: query
+          name: status
+          required: false
+          schema:
+            $ref: '#/components/schemas/CashoutStatus'
+          example: PENDING
+        - in: query
+          name: method
+          required: false
+          schema:
+            $ref: '#/components/schemas/CashoutMethod'
+          example: BKASH
+        - in: query
+          name: searchTerm
+          required: false
+          schema:
+            type: string
+          example: d7b9687d-dd13-4dee-b78a-1773c5b1b50e
+      responses:
+        '200':
+          description: Cashout requests retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminCashoutListResponse'
+        '400':
+          description: Bad request
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /cashout/admin/cashouts/{id}/status:
+    patch:
+      security:
+        - BearerAuth: []
+      operationId: updateCashoutStatus
+      tags:
+        - Cashout
+      summary: Update cashout status
+      description: Update a pending cashout request status to COMPLETED, REJECTED, or FAILED.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          example: 52054f5c-6f64-42fc-9c85-80c33104f43a
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCashoutStatusRequest'
+            examples:
+              complete:
+                summary: Complete cashout
+                value:
+                  status: COMPLETED
+                  adminTransactionId: BKASH123456
+              reject:
+                summary: Reject cashout
+                value:
+                  status: REJECTED
+                  rejectionReason: Invalid account information
+              fail:
+                summary: Fail cashout
+                value:
+                  status: FAILED
+                  failureReason: bKash transfer failed
+      responses:
+        '200':
+          description: Cashout status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashoutActionResponse'
+        '400':
+          description: Only pending cashout can be updated or required reason/transaction ID is missing
+        '404':
+          description: Cashout request not found
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /cashout/admin/settings:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getCashoutSetting
+      tags:
+        - Cashout
+      summary: Get cashout settings
+      description: Get current cashout charge rate and minimum cashout amount.
+      responses:
+        '200':
+          description: Cashout setting retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashoutSettingResponse'
+        '404':
+          description: Cashout setting not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      security:
+        - BearerAuth: []
+      operationId: updateCashoutSetting
+      tags:
+        - Cashout
+      summary: Update cashout settings
+      description: Update cashout charge rate or minimum cashout amount.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCashoutSettingRequest'
+      responses:
+        '200':
+          description: Cashout setting updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCashoutSettingResponse'
+        '400':
+          description: Invalid cashout setting payload
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /vendor/get-vendor-profile:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getVendorProfile
+      tags:
+        - Dashboard
+      summary: Get Vendor Profile
+      description: Get own vendor profile by vendor id
+      responses:
+        '200':
+          description: Vendor Profile Retrieved Successfully
+          content:
+            application/json:
+              example:
+                success: true
+                message: Vendor profile retrieved successfully
+                data:
+                  id: ac7cb1fe-4894-499d-938f-c0855444d3a1
+                  avatar: https://i.pravatar.cc/300?img=12
+                  shopName: Salman sssssssssss
+                  shopLogo: null
+                  subDomain: salman-hossain12345@shop
+                  user:
+                    name: Md. Salman Hossain Updated
+                    email: salman-hossain12345@gmail.com
+                    phone: '01362397610'
+        '400':
+          description: Bad Request (Invalid Vendor ID)
+        '401':
+          description: Unauthorized (No token or invalid token)
+        '404':
+          $ref: '#/components/responses/VendorNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /vendor/update-vendor-profile:
+    patch:
+      security:
+        - BearerAuth: []
+      operationId: updateVendorProfile
+      tags:
+        - Dashboard
+      summary: Update Vendor Profile
+      description: Update own vendor profile information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              avatar: https://i.pravatar.cc/300?img=12
+              shopName: 'Salman '
+              shopLogo: https://via.placeholder.com/300x300.png?text=New+Shop+Logo+Updated
+              name: Md. Salman Hossain Updated
+              phone: '01712345675'
+      responses:
+        '200':
+          description: Vendor Profile Updated Successfully
+          content:
+            application/json:
+              example:
+                success: true
+                message: Vendor profile updated successfully
+                data:
+                  avatar: https://i.pravatar.cc/300?img=12
+                  shopName: 'Salman '
+                  shopLogo: https://via.placeholder.com/300x300.png?text=New+Shop+Logo+Updated
+                  user:
+                    name: Md. Salman Hossain Updated
+                    phone: '01712345675'
+        '400':
+          description: Validation Error
+        '401':
+          description: Unauthorized
+        '404':
+          $ref: '#/components/responses/VendorNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /vendor/delete-vendor-profile:
+    delete:
+      security:
+        - BearerAuth: []
+      operationId: deleteVendorProfile
+      tags:
+        - Dashboard
+      summary: Delete Vendor Profile
+      description: Soft delete vendor profile by vendor id
+      responses:
+        '200':
+          description: Vendor Deleted Successfully
+          content:
+            application/json:
+              example:
+                success: true
+                message: Vendor profile delete successfully
+                data:
+                  id: 21b304b7-01b6-463f-b3ae-f159fce69b0c
+                  name: Nazmul Khan5
+                  email: nazmul@5example.com
+                  phone: '01711823511'
+                  password: $2b$12$TITEN38bQitg7y.BJz4LZudnlxFiAW57AVm7iKHt.7Hs80yWjT8j6
+                  role: VENDOR
+                  isDeleted: true
+                  deletedAt: '2026-06-10T17:56:05.651Z'
+                  isVerified: true
+                  createdAt: '2026-06-10T12:04:13.283Z'
+                  updatedAt: '2026-06-10T17:56:05.651Z'
+        '400':
+          description: Bad Request (Invalid Vendor ID)
+        '401':
+          description: Unauthorized Access
+        '404':
+          $ref: '#/components/responses/VendorNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/get-all-vendor:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getAllVendor
+      tags:
+        - Admin
+      summary: Get All Vendors
+      description: Retrieve a list of all vendors in the system.
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: Vendors retrieved successfully
+          content:
+            application/json:
+              example:
+                success: true
+                message: Vendors retrieved successfully
+                data:
+                  - id: ac7cb1fe-4894-499d-938f-c0855444d3a1
+                    shopName: Salman
+                    shopLogo: https://via.placeholder.com/300
+                    subDomain: salman-shop
+                    accountStatus: ACTIVE
+                    user:
+                      name: Md. Salman Hossain Updated
+                      email: salman@example.com
+                      phone: '01712345675'
+                      role: VENDOR
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /admin/update-vendor-status/{id}:
+    patch:
+      security:
+        - BearerAuth: []
+      operationId: updateVendorStatus
+      tags:
+        - Admin
+      summary: Update Vendor Status
+      description: Update vendor account status.
+      parameters:
+        - $ref: '#/components/parameters/VendorId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accountStatus:
+                  $ref: '#/components/schemas/VendorAccountStatus'
+              required:
+                - accountStatus
+            example:
+              accountStatus: ACTIVE
+      responses:
+        '200':
+          description: Vendor status updated successfully
+          content:
+            application/json:
+              example:
+                success: true
+                message: Vendor status updated successfully
+                data:
+                  id: 3098e065-f60c-4a9c-a5d2-8aac400c4ef2
+                  accountStatus: SUSPENDED
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          $ref: '#/components/responses/VendorNotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /admin/delete-vendor-profile/{id}:
+    delete:
+      security:
+        - BearerAuth: []
+      operationId: adminDeleteVendorProfile
+      tags:
+        - Admin
+      summary: Delete Vendor Profile
+      description: Soft delete vendor profile.
+      parameters:
+        - $ref: '#/components/parameters/VendorId'
+      responses:
+        '200':
+          description: Vendor deleted successfully
+          content:
+            application/json:
+              example:
+                success: true
+                message: Vendor deleted successfully
+                data:
+                  id: 1b5c3231-f001-4fe9-a531-a0fffe2633c5
+                  isDeleted: true
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          $ref: '#/components/responses/VendorNotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /admin/get-all-orders:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getAllOrders
+      tags:
+        - Admin
+      summary: Get All Orders
+      description: Retrieve all orders in system.
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              example:
+                success: true
+                message: Orders retrieved successfully
+                data:
+                  - id: c4ac26cc-78b1-45b9-abb5-49307aafa3eb
+                    totalPrice: 1419.99
+                    status: CONFIRMED
+                    customerName: Mahdi Hasan
+                    customerPhone: '01880230924'
+                    customerEmail: mahdi@example.com
+                    createdAt: '2026-06-10T17:56:15.282Z'
+                    updatedAt: '2026-06-10T17:57:08.717Z'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /admin/restore-vendor/{id}:
+    patch:
+      security:
+        - BearerAuth: []
+      operationId: restoreVendorProfile
+      tags:
+        - Admin
+      summary: Restore Vendor Profile
+      description: Restore soft-deleted vendor.
+      parameters:
+        - $ref: '#/components/parameters/VendorId'
+      responses:
+        '200':
+          description: Vendor restored successfully
+          content:
+            application/json:
+              example:
+                success: true
+                message: Vendor restored successfully
+                data:
+                  id: 0bef8e9c-f52a-4c7a-bd12-89af19a70656
+                  isDeleted: false
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          $ref: '#/components/responses/VendorNotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /admin/get-order-stats/{id}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getOrderStats
+      tags:
+        - Admin
+      summary: Get Order Statistics
+      description: Get vendor/order statistics.
+      parameters:
+        - $ref: '#/components/parameters/VendorId'
+      responses:
+        '200':
+          description: Order statistics retrieved successfully
+          content:
+            application/json:
+              example:
+                success: true
+                message: get vendor stats successful
+                result:
+                  vendorId: 3098e065-f60c-4a9c-a5d2-8aac400c4ef2
+                  shopName: Nazmul Tech Store
+                  status: ACTIVE
+                  totalOrders: 8
+                  totalEarnings: 0
+                  productCount: 1
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /uploads/product-images:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: uploadProductImages
+      tags:
+        - Image Upload
+      summary: Upload product images
+      description: |
+        Upload product images for a vendor product.
+
+        Rules:
+          - Authentication required
+          - Maximum 5 images per request
+          - Supported formats: JPG, JPEG, PNG, WEBP
+          - Maximum file size: 2 MB per image
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadImageProduct'
+      responses:
+        '200':
+          description: Images uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadImageResponse'
+        '400':
+          description: Invalid file format or upload limit exceeded
+        '401':
+          description: Unauthorized
+        '413':
+          description: File size too large
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /uploads:
+    get:
+      security: []
+      operationId: getAllImages
+      tags:
+        - Image Upload
+      summary: Get all uploaded images
+      description: |
+        Retrieve all uploaded product images.
+
+        Returns image metadata including:
+        - Product ID
+        - Image URL
+        - Alternative text
+        - Created and updated timestamps
+      responses:
+        '200':
+          description: Images retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Images'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /uploads/{id}:
+    get:
+      security: []
+      operationId: getSingleImage
+      tags:
+        - Image Upload
+      summary: Get a single image by ID
+      description: |
+        Retrieve a specific image by its unique ID.
+
+        Returns image metadata along with basic information about the associated product.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Unique image ID
+          schema:
+            type: string
+            example: clzabc123
+      responses:
+        '200':
+          description: Image retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Image retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/Images'
+        '404':
+          description: Image not found
+          content:
+            application/json:
+              example:
+                success: false
+                message: Image not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /uploads/meta/{id}:
+    patch:
+      security:
+        - BearerAuth: []
+      operationId: updateImageMetaData
+      tags:
+        - Image Upload
+      summary: Update image metadata
+      description: |
+        Update metadata for an existing image.
+
+        Currently supported fields:
+        - altText
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Unique image ID
+          schema:
+            type: string
+            example: clzabc123
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateImageRequest'
+      responses:
+        '200':
+          description: Image metadata updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateImageResponse'
+        '400':
+          description: Validation failed
+        '404':
+          description: Image not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /uploads/{id}/replace:
+    patch:
+      security:
+        - BearerAuth: []
+      operationId: replaceImage
+      tags:
+        - Image Upload
+      summary: Replace an existing image
+      description: |
+        Replace an existing image with a new one.
+
+        The system will:
+        - Upload the new image to Cloudinary
+        - Update image metadata in the database
+        - Remove the previous image from Cloudinary
+
+        Rules:
+        - Authentication required
+        - Only one image can be uploaded
+        - Supported formats: JPG, JPEG, PNG, WEBP
+        - Maximum file size: 2 MB
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Unique image ID
+          schema:
+            type: string
+            example: clzabc123
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReplaceImageRequest'
+      responses:
+        '200':
+          description: Image replaced successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplaceImageResponse'
+        '400':
+          description: Invalid file format or file size exceeded
+        '401':
+          description: Unauthorized
+        '404':
+          description: Image not found
+        '413':
+          description: File size too large
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /uploads/delete/{id}:
+    delete:
+      security:
+        - BearerAuth: []
+      operationId: deleteImage
+      tags:
+        - Image Upload
+      summary: Delete an image
+      description: |
+        Delete an image permanently.
+
+        The system will:
+        - Remove the image from Cloudinary
+        - Remove the image record from the database
+
+        This action cannot be undone.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Unique image ID
+          schema:
+            type: string
+            example: clzabc123
+      responses:
+        '200':
+          description: Image deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteImageResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Image not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /dashboards/admin:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: adminDashboardStats
+      tags:
+        - Dashboard
+      summary: Get Admin Dashboard Statistics
+      description: Retrieve statistics and metrics for the admin dashboard.
+      responses:
+        '200':
+          description: Admin dashboard statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDashboardStats'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /dashboards/admin/vendors:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getVendorList
+      tags:
+        - Dashboard
+      summary: Get Admin Dashboard Vendor List
+      description: Retrieve a paginated list of vendors for the admin dashboard.
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/limit'
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - ACTIVE
+              - PENDING
+              - SUSPENDED
+              - BLOCKED
+          description: Filter vendors by account status
+        - name: division
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter vendors by division name
+        - name: district
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter vendors by district name
+      responses:
+        '200':
+          description: Vendor list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /dashboards/admin/customers:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getGuestCustomerList
+      tags:
+        - Dashboard
+      summary: Get Admin Dashboard Guest Customer List
+      description: Retrieve a paginated list of guest customers for the admin dashboard.
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/limit'
+        - name: division
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter customers by division name
+        - name: district
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter customers by district name
+      responses:
+        '200':
+          description: Customer list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /dashboards/admin/admin-account-status/{id}:
+    patch:
+      security:
+        - BearerAuth: []
+      operationId: updateAdminAccountStatus
+      tags:
+        - Dashboard
+      summary: Update Admin Account Status
+      description: Update the account status of an admin user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the admin user to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminAccountStatusUpdateRequest'
+      responses:
+        '200':
+          description: Admin account status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminAccountStatusUpdateResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /dashboards/vendor:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: vendorDashboardStats
+      tags:
+        - Dashboard
+      summary: Get Vendor Dashboard Statistics
+      description: Retrieve statistics and metrics for the vendor dashboard.
+      responses:
+        '200':
+          description: Vendor dashboard statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorDashboardStats'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /dashboards/vendor/orders:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getVendorOrders
+      tags:
+        - Dashboard
+      summary: Get Vendor Orders
+      description: Retrieve orders containing products owned by the vendor, with optional status filtering.
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/limit'
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - CONFIRMED
+              - PROCESSING
+              - SHIPPED
+              - DELIVERED
+              - CANCELLED
+              - RETURNED
+              - REFUNDED
+          description: Filter orders by order status
+      responses:
+        '200':
+          description: Vendor orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorOrdersResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /dashboards/vendor/delivery-charge:
+    patch:
+      security:
+        - BearerAuth: []
+      operationId: vendorDeliveryCharge
+      tags:
+        - Dashboard
+      summary: Set Vendor Delivery Charge
+      description: Set inside/outside district delivery charges for the vendor's shop.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorDeliveryChargeRequest'
+      responses:
+        '200':
+          description: Vendor delivery charge is set successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorDeliveryChargeResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /dashboards/vendor/customers:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getVendorCustomerList
+      tags:
+        - Dashboard
+      summary: Get Vendor Dashboard Guest Customer List
+      description: Retrieve a paginated list of guest customers who have purchased from the vendor.
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/limit'
+        - name: division
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter customers by division name
+        - name: district
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter customers by district name
+      responses:
+        '200':
+          description: Customer list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorCustomerListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /dashboards/customer:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: customerDashboardStats
+      tags:
+        - Dashboard
+      summary: Get Customer Dashboard Data
+      description: Retrieve profile information and order list/count for the customer dashboard.
+      responses:
+        '200':
+          description: Customer dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDashboardStats'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /dashboards/customer/orders:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getOrderDetail
+      tags:
+        - Dashboard
+      summary: Get Customer Orders
+      description: Retrieve detailed information for all customer orders.
+      responses:
+        '200':
+          description: Order detail retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerOrderDetailResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /location/divisions:
+    get:
+      security: []
+      operationId: getDivisions
+      tags:
+        - Location
+      summary: Get all divisions
+      description: Retrieve all divisions ordered by name.
+      responses:
+        '200':
+          description: Divisions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Division'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /location/districts:
+    get:
+      security: []
+      operationId: getDistricts
+      tags:
+        - Location
+      summary: Get districts
+      description: Retrieve all districts or districts by division.
+      parameters:
+        - in: query
+          name: divisionId
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Division ID
+      responses:
+        '200':
+          description: Districts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/District'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /subscriptions/plans:
+    get:
+      operationId: getActiveSubscriptionPlansForVendor
+      security: []
+      tags:
+        - Subscription
+      summary: Get active subscription plans
+      description: Public route. Retrieve active subscription plans that vendors can choose from.
+      responses:
+        '200':
+          description: Subscription plans retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlanListResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /subscriptions/my-subscription:
+    get:
+      operationId: getMySubscription
+      security:
+        - BearerAuth: []
+      tags:
+        - Subscription
+      summary: Get my subscription
+      description: Vendor route. Retrieve the logged-in vendor's current trial, active, or pending subscription.
+      responses:
+        '200':
+          description: Vendor subscription retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorSubscriptionResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Vendor role is required or vendor account is not active
+        '404':
+          description: Vendor not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /subscriptions/checkout:
+    post:
+      operationId: checkoutSubscriptionPlan
+      security:
+        - BearerAuth: []
+      tags:
+        - Subscription
+      summary: Checkout subscription plan
+      description: Vendor route. Create a pending subscription and payment for the selected plan.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckoutSubscriptionRequest'
+            example:
+              planId: 7f4df13e-8b4f-4cb3-bfc1-5570b3c32f21
+      responses:
+        '201':
+          description: Subscription checkout created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutSubscriptionResponse'
+        '400':
+          description: Invalid plan id, inactive plan, or free trial checkout attempt
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Vendor role is required, vendor account is not active, or installment fee is not paid
+        '404':
+          description: Vendor or subscription plan not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /subscriptions/admin/plans:
+    get:
+      operationId: getSubscriptionPlansForAdmin
+      security:
+        - BearerAuth: []
+      tags:
+        - Subscription
+      summary: Get all subscription plans for admin
+      description: Admin route. Retrieve all subscription plans, including inactive plans.
+      responses:
+        '200':
+          description: Subscription plans retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlanListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Admin role is required
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      operationId: createSubscriptionPlan
+      security:
+        - BearerAuth: []
+      tags:
+        - Subscription
+      summary: Create subscription plan
+      description: Admin route. Create a new subscription plan. Plan name and plan type must be unique.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubscriptionPlanRequest'
+            example:
+              name: Standard Plan
+              type: STANDARD
+              price: 999
+              durationDays: 30
+              isActive: true
+              isTrial: false
+              description: Basic monthly subscription plan for vendors
+      responses:
+        '201':
+          description: Subscription plan created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlanResponse'
+        '400':
+          description: Validation error
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Admin role is required
+        '409':
+          description: Plan name or plan type already exists
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /subscriptions/admin/plans/{planId}:
+    patch:
+      operationId: updateSubscriptionPlan
+      security:
+        - BearerAuth: []
+      tags:
+        - Subscription
+      summary: Update subscription plan
+      description: Admin route. Update an existing subscription plan by planId.
+      parameters:
+        - in: path
+          name: planId
+          required: true
+          description: Subscription plan ID
+          schema:
+            type: string
+            format: uuid
+          example: 7f4df13e-8b4f-4cb3-bfc1-5570b3c32f21
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSubscriptionPlanRequest'
+            example:
+              name: Updated Standard Plan
+              price: 1099
+              durationDays: 30
+              isActive: true
+              isTrial: false
+              description: Updated monthly subscription plan
+      responses:
+        '200':
+          description: Subscription plan updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlanResponse'
+        '400':
+          description: Validation error or planId is required
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Admin role is required
+        '404':
+          description: Subscription plan not found
+        '409':
+          description: Plan name already exists
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      operationId: deleteSubscriptionPlan
+      security:
+        - BearerAuth: []
+      tags:
+        - Subscription
+      summary: Delete subscription plan
+      description: Admin route. Delete an unused subscription plan.
+      parameters:
+        - in: path
+          name: planId
+          required: true
+          description: Subscription plan ID
+          schema:
+            type: string
+            format: uuid
+          example: 7f4df13e-8b4f-4cb3-bfc1-5570b3c32f21
+      responses:
+        '200':
+          description: Subscription plan deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlanResponse'
+        '400':
+          description: Plan is already used or planId is required
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Admin role is required
+        '404':
+          description: Subscription plan not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /subscriptions/admin/vendors/{vendorId}/trial:
+    post:
+      operationId: createTrialForVendor
+      security:
+        - BearerAuth: []
+      tags:
+        - Subscription
+      summary: Create vendor trial
+      description: Admin route. Assign a free trial subscription to a vendor.
+      parameters:
+        - in: path
+          name: vendorId
+          required: true
+          description: Vendor ID
+          schema:
+            type: string
+            format: uuid
+          example: 90656f9f-32a6-4c83-9c5c-9a8c8afc3b9a
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTrialRequest'
+            example:
+              trialDays: 3
+      responses:
+        '201':
+          description: Vendor trial created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorSubscriptionResponse'
+        '400':
+          description: Validation error or vendorId is required
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Admin role is required or vendor account is not active
+        '404':
+          description: Vendor not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /subscriptions/admin/vendors/{vendorId}:
+    get:
+      operationId: getVendorSubscriptionsForAdmin
+      security:
+        - BearerAuth: []
+      tags:
+        - Subscription
+      summary: Get vendor subscriptions for admin
+      description: Admin route. Retrieve all subscriptions of a specific vendor.
+      parameters:
+        - in: path
+          name: vendorId
+          required: true
+          description: Vendor ID
+          schema:
+            type: string
+            format: uuid
+          example: 90656f9f-32a6-4c83-9c5c-9a8c8afc3b9a
+      responses:
+        '200':
+          description: Vendor subscriptions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorSubscriptionListResponse'
+        '400':
+          description: vendorId is required
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Admin role is required or vendor account is not active
+        '404':
+          description: Vendor not found
+        '500':
+          $ref: '#/components/responses/ServerError'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Success:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponse'
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            badRequest:
+              value:
+                success: false
+                message: Bad Request
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: Validation Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Account is not active
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            forbidden:
+              value:
+                success: false
+                message: Your account is not active yet. Please wait for approval.
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            vendorExists:
+              value:
+                success: false
+                message: Vendor Already Exists!
+            emailExists:
+              value:
+                success: false
+                message: Email Already Exists!
+            subDomainExists:
+              value:
+                success: false
+                message: SubDomain Already Exists!
+    InvalidVerificationCode:
+      description: Invalid or expired verification code
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            invalidCode:
+              value:
+                success: false
+                message: Invalid or expired verification code
+    VendorNotFound:
+      description: Vendor Not Found
+      content:
+        application/json:
+          example:
+            success: false
+            statusCode: 404
+            message: Vendor not found
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          example:
+            success: false
+            statusCode: 500
+            message: Something went wrong
+  schemas:
+    AdminRegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - phone
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          format: email
+          example: johndoe@gmail.com
+        password:
+          type: string
+          example: password123
+        phone:
+          type: string
+          example: '01712345678'
+        avatar:
+          type: string
+          nullable: true
+          example: https://example.com/avatar.jpg
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Operation successful
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Something went wrong
+    VendorRegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - phone
+        - area
+        - divisionName
+        - districtName
+        - shopName
+        - subDomain
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          format: email
+          example: johndoe@gmail.com
+        password:
+          type: string
+          example: password123
+        phone:
+          type: string
+          example: '01712345678'
+        avatar:
+          type: string
+          nullable: true
+          example: https://example.com/avatar.jpg
+        area:
+          type: string
+          example: Dhanmondi
+        divisionName:
+          type: string
+          example: Dhaka
+        districtName:
+          type: string
+          example: Dhaka
+        shopName:
+          type: string
+          example: John's Store
+        shopLogo:
+          type: string
+          nullable: true
+          example: https://example.com/shop-logo.jpg
+        subDomain:
+          type: string
+          example: johnstore
+    VerifyEmailRequest:
+      type: object
+      required:
+        - email
+        - code
+      properties:
+        email:
+          type: string
+          format: email
+          example: johndoe@gmail.com
+        code:
+          type: string
+          example: '123456'
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: johndoe@gmail.com
+        password:
+          type: string
+          example: password123
+    OrderAddress:
+      type: object
+      properties:
+        area:
+          type: string
+          example: Kaliganj, Gazipur
+        district:
+          type: object
+          properties:
+            name:
+              type: string
+              example: Gazipur
+        division:
+          type: object
+          properties:
+            name:
+              type: string
+              example: Dhaka
+    OrderProduct:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 75f053a5-7b7c-4925-be14-69ee51c4d11d
+        name:
+          type: string
+          example: Nokia 2000
+        slug:
+          type: string
+          example: nokia-2000
+        price:
+          type: number
+          example: 1999
+        vendorId:
+          type: string
+          example: a8d28ac8-f3e9-4714-9565-fdf6eca52c0e
+    OrderItemResponse:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          example: 1
+        price:
+          type: number
+          example: 1999
+        product:
+          $ref: '#/components/schemas/OrderProduct'
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 95beb353-4b82-40d3-b75d-f38eda893c17
+        status:
+          type: string
+          example: PENDING
+        totalPrice:
+          type: number
+          example: 1999
+        customerName:
+          type: string
+          example: Refat
+        customerPhone:
+          type: string
+          example: '01711223344'
+        customerEmail:
+          type: string
+          example: rahim@example.com
+        address:
+          $ref: '#/components/schemas/OrderAddress'
+        createdAt:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemResponse'
+        gatewayPageURL:
+          type: string
+          nullable: true
+          example: null
+    PaginationMeta:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 12
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        totalPages:
+          type: integer
+          example: 2
+        hasNextPage:
+          type: boolean
+          example: true
+        hasPrevPage:
+          type: boolean
+          example: false
+    OrderListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Orders retrieved successfully
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+    CustomerInfo:
+      type: object
+      required:
+        - name
+        - phone
+        - email
+        - area
+        - districtName
+        - divisionName
+      properties:
+        name:
+          type: string
+          example: Refat
+        phone:
+          type: string
+          example: '01711223344'
+        email:
+          type: string
+          format: email
+          example: rahim@example.com
+        area:
+          type: string
+          example: Kaliganj, Gazipur
+        districtName:
+          type: string
+          example: Gazipur
+        divisionName:
+          type: string
+          example: Dhaka
+    OrderItem:
+      type: object
+      required:
+        - productId
+        - quantity
+      properties:
+        productId:
+          type: string
+          format: uuid
+          example: 75f053a5-7b7c-4925-be14-69ee51c4d11d
+        quantity:
+          type: integer
+          example: 1
+    PaymentMethod:
+      type: string
+      enum:
+        - COD
+        - ONLINE
+      example: COD
+    PlaceOrderRequest:
+      type: object
+      required:
+        - customerInfo
+        - items
+      properties:
+        customerInfo:
+          $ref: '#/components/schemas/CustomerInfo'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
+    OrderResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Order placed successfully
+        data:
+          $ref: '#/components/schemas/Order'
+    SingleOrderResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Order retrieved successfully
+        data:
+          $ref: '#/components/schemas/Order'
+    UpdateOrderStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - PENDING
+            - CONFIRMED
+            - PROCESSING
+            - SHIPPED
+            - DELIVERED
+            - COMPLETED
+            - CANCELLED
+            - RETURNED
+            - REFUNDED
+            - FAILED
+          example: CONFIRMED
+    UpdateOrderStatusData:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 000e7811-84e9-42c2-80f5-24f239ce0002
+        guestCustomerId:
+          type: string
+          example: 21636bbb-d76a-4e56-b837-ee02da78179d
+        totalPrice:
+          type: number
+          example: 1999
+        status:
+          type: string
+          example: CONFIRMED
+        customerName:
+          type: string
+          example: Refat
+        customerPhone:
+          type: string
+          example: '01711223344'
+        customerEmail:
+          type: string
+          example: rahim@example.com
+        addressId:
+          type: string
+          example: e0143f32-625f-4bef-9470-88e0773291fc
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    UpdateOrderStatusResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Order status updated successfully
+        data:
+          $ref: '#/components/schemas/UpdateOrderStatusData'
+    InvalidOrderStatusTransition:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Cannot change status from "PENDING" to "DELIVERED"
+        currentStatus:
+          type: string
+          example: PENDING
+        attemptedStatus:
+          type: string
+          example: DELIVERED
+        allowedTransitions:
+          type: array
+          items:
+            type: string
+          example:
+            - CONFIRMED
+            - CANCELLED
+    TrackOrderResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Orders found
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+    Images:
+      type: object
+      properties:
+        id:
+          type: string
+          example: img_123
+        productId:
+          type: string
+          example: prod_123
+        imageName:
+          type: string
+          example: shoe-front.jpg
+        imageUrl:
+          type: string
+          format: uri
+          example: https://res.cloudinary.com/demo/image/upload/shoe-front.jpg
+        altText:
+          type: string
+          example: Front view
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-06-07T10:00:00.000Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2026-06-07T10:00:00.000Z'
+        product:
+          type: object
+          properties:
+            id:
+              type: string
+              example: prod_123
+            name:
+              type: string
+              example: Nike Air Max
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          example: f1792713-0af8-4d8a-b691-4e42a1e380e2
+        name:
+          type: string
+          example: iPhone 15 Pro
+        slug:
+          type: string
+          example: iphone-15-pro
+        description:
+          type: string
+          nullable: true
+          example: Latest Apple flagship smartphone
+        price:
+          type: number
+          format: float
+          example: 1299.99
+        stock:
+          type: integer
+          example: 50
+        status:
+          type: string
+          example: ACTIVE
+          description: ProductStatus enum (ACTIVE | INACTIVE | OUT_OF_STOCK)
+        vendorId:
+          type: string
+          example: ven_123456
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/Images'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ProductListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Products retrieved successfully
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+    CreateProductResponse:
+      type: object
+      required:
+        - name
+        - slug
+        - price
+      properties:
+        name:
+          type: string
+          example: iPhone 15 Pro
+        slug:
+          type: string
+          example: iphone-15-pro
+        description:
+          type: string
+          example: Latest Apple flagship smartphone
+        price:
+          type: number
+          example: 1299.99
+        stock:
+          type: integer
+          example: 50
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+          example:
+            - https://example.com/img1.jpg
+    ProductResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Product retrieved successfully
+        data:
+          $ref: '#/components/schemas/Product'
+    GetProductResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 3b4d2463-4c37-4299-a727-63962ac5625f
+        name:
+          type: string
+          example: Apple iPhone 15 Pro
+        slug:
+          type: string
+          example: apple-iphone-15-pro
+        description:
+          type: string
+          example: <p>The iPhone 15 Pro features a titanium design, A17 Pro chip, and advanced camera system.</p>
+        price:
+          type: number
+          format: float
+          example: 1299.99
+        stock:
+          type: integer
+          example: 25
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - OUT_OF_STOCK
+          example: ACTIVE
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T14:39:30.521Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T14:39:30.521Z'
+        images:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                example: d42c12bb-1f27-41f8-884e-c4d0afd91147
+              imageUrl:
+                type: string
+                format: uri
+                example: https://example.com/images/iphone15pro-front.jpg
+              imageName:
+                type: string
+                nullable: true
+                example: null
+              altText:
+                type: string
+                nullable: true
+                example: null
+        vendor:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 85cb9ef0-238b-443b-a15f-a985703a5da8
+            shopName:
+              type: string
+              example: John's Store
+    UpdateProductResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        stock:
+          type: integer
+        status:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+    InitiatePaymentRequest:
+      type: object
+      required:
+        - orderId
+      properties:
+        orderId:
+          type: string
+          example: test-order-1
+    InitiatePaymentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Payment session initiated successfully
+        data:
+          type: object
+          properties:
+            paymentId:
+              type: string
+              example: c31a8c98-d114-41ff-b2c2-ec313cb8451e
+            orderId:
+              type: string
+              example: test-order-1
+            transactionId:
+              type: string
+              example: TXN-1780726076914
+            gatewayPageURL:
+              type: string
+              example: https://sandbox.sslcommerz.com/EasyCheckOut/testcde375ad64d4c1c8b5dc3a90f8c1255b418
+    SSLCommerzCallbackRequest:
+      type: object
+      required:
+        - tran_id
+        - status
+      properties:
+        tran_id:
+          type: string
+          example: TXN-1780892414149
+        status:
+          type: string
+          enum:
+            - VALID
+            - FAILED
+            - CANCELLED
+          example: VALID
+    PaymentCallbackResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Payment success callback received
+        data:
+          type: object
+          properties:
+            transactionId:
+              type: string
+              example: TXN-1780892414149
+            status:
+              type: string
+              example: VALID
+            message:
+              type: string
+              example: Payment received. Awaiting final verification.
+    PaymentFailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Payment fail callback received
+        data:
+          type: object
+          properties:
+            transactionId:
+              type: string
+              example: TXN-1780892414149
+            status:
+              type: string
+              example: FAILED
+            message:
+              type: string
+              example: Payment failed. Awaiting IPN confirmation.
+    PaymentCancelResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Payment cancel callback received
+        data:
+          type: object
+          properties:
+            transactionId:
+              type: string
+              example: TXN-1780892414149
+            status:
+              type: string
+              example: CANCELLED
+            message:
+              type: string
+              example: Payment cancelled. Awaiting IPN confirmation.
+    SSLCommerzIpnRequest:
+      type: object
+      required:
+        - tran_id
+        - status
+        - val_id
+        - amount
+        - currency
+      properties:
+        tran_id:
+          type: string
+          example: TXN-1780892414149
+        status:
+          type: string
+          enum:
+            - VALID
+            - FAILED
+            - CANCELLED
+          example: VALID
+        val_id:
+          type: string
+          example: 2606081020302ibAGSmfEsCGx0
+        amount:
+          type: string
+          example: '1500.00'
+        currency:
+          type: string
+          example: BDT
+    PaymentIpnResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Payment IPN received
+        data:
+          type: object
+          properties:
+            paymentId:
+              type: string
+              example: e8fb328f-94b6-4942-9324-2c60b78193dc
+            orderId:
+              type: string
+              nullable: true
+              example: ORD001
+            subscriptionId:
+              type: string
+              nullable: true
+              example: c2df2a6a-20ef-40a7-bad8-c8ee4fbf50a4
+            status:
+              type: string
+              example: VALID
+    CashoutSummaryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Cashout summary retrieved successfully
+        data:
+          type: object
+          properties:
+            lifetimeEarning:
+              type: number
+              example: 10000
+            lifetimeCashout:
+              type: number
+              example: 7000
+            pendingCashout:
+              type: number
+              example: 1101
+            availableBalance:
+              type: number
+              example: 1899
+            chargeRate:
+              type: number
+              example: 2
+            withdrawableBalance:
+              type: number
+              example: 1861.02
+            minimumCashout:
+              type: number
+              example: 1000
+            hasMinimumCashoutBalance:
+              type: boolean
+              example: true
+    CashoutMethod:
+      type: string
+      enum:
+        - BKASH
+        - NAGAD
+        - ROCKET
+    CreateCashoutRequest:
+      type: object
+      required:
+        - amount
+        - method
+        - accountHolderName
+        - accountNumber
+      properties:
+        amount:
+          type: number
+          example: 5000
+        method:
+          $ref: '#/components/schemas/CashoutMethod'
+        accountHolderName:
+          type: string
+          example: Test Vendor
+        accountNumber:
+          type: string
+          example: '01712345678'
+    CashoutStatus:
+      type: string
+      enum:
+        - PENDING
+        - COMPLETED
+        - FAILED
+        - REJECTED
+    CreatedCashout:
+      type: object
+      properties:
+        cashoutId:
+          type: string
+          example: 43d07ae6-c8ed-4c0d-84b3-d6254a893052
+        requestedAmount:
+          type: string
+          example: '1001'
+        chargeAmount:
+          type: string
+          example: '20.02'
+        payoutAmount:
+          type: string
+          example: '980.98'
+        method:
+          $ref: '#/components/schemas/CashoutMethod'
+        status:
+          $ref: '#/components/schemas/CashoutStatus'
+        requestedAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T11:22:04.989Z'
+    CreateCashoutResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Cashout request created successfully
+        data:
+          $ref: '#/components/schemas/CreatedCashout'
+    AdminCashoutItem:
+      type: object
+      properties:
+        cashoutId:
+          type: string
+          example: d7b9687d-dd13-4dee-b78a-1773c5b1b50e
+        vendorId:
+          type: string
+          example: 90656f9f-32a6-4c83-9c5c-9a8c8afc3b9a
+        vendorName:
+          type: string
+          example: Salman Hossain
+        vendorEmail:
+          type: string
+          example: salman@example.com
+        shopName:
+          type: string
+          example: Salman Electronics
+        requestedAmount:
+          type: string
+          example: '5000'
+        chargeAmount:
+          type: string
+          example: '100'
+        payoutAmount:
+          type: string
+          example: '4900'
+        method:
+          $ref: '#/components/schemas/CashoutMethod'
+        accountHolderName:
+          type: string
+          example: Test Vendor
+        accountNumber:
+          type: string
+          example: '01712345678'
+        status:
+          $ref: '#/components/schemas/CashoutStatus'
+        requestedAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T06:32:42.603Z'
+    AdminCashoutListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Pending cashout requests retrieved successfully
+        data:
+          type: object
+          properties:
+            meta:
+              type: object
+              properties:
+                page:
+                  type: number
+                  example: 1
+                limit:
+                  type: number
+                  example: 10
+                total:
+                  type: number
+                  example: 1
+                totalPage:
+                  type: number
+                  example: 1
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/AdminCashoutItem'
+    UpdateCashoutStatus:
+      type: string
+      enum:
+        - COMPLETED
+        - REJECTED
+        - FAILED
+    UpdateCashoutStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/UpdateCashoutStatus'
+        adminTransactionId:
+          type: string
+          example: BKASH123456
+        rejectionReason:
+          type: string
+          example: Invalid account information
+        failureReason:
+          type: string
+          example: bKash transfer failed
+    Cashout:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 52054f5c-6f64-42fc-9c85-80c33104f43a
+        vendorId:
+          type: string
+          example: d59bc444-d489-48e3-a196-a99a25389918
+        requestedAmount:
+          type: string
+          example: '1101'
+        chargeRate:
+          type: string
+          example: '2'
+        chargeAmount:
+          type: string
+          example: '22.02'
+        payoutAmount:
+          type: string
+          example: '1078.98'
+        method:
+          $ref: '#/components/schemas/CashoutMethod'
+        accountHolderName:
+          type: string
+          example: Test Vendor
+        accountNumber:
+          type: string
+          example: '01712345678'
+        status:
+          $ref: '#/components/schemas/CashoutStatus'
+        adminTransactionId:
+          type: string
+          nullable: true
+          example: BKASH123456
+        failureReason:
+          type: string
+          nullable: true
+          example: bKash transfer failed
+        rejectionReason:
+          type: string
+          nullable: true
+          example: Invalid account information
+        requestedAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T06:32:42.603Z'
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2026-06-10T11:21:00.237Z'
+        failedAt:
+          type: string
+          format: date-time
+          nullable: true
+        rejectedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T06:32:42.603Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T11:21:00.238Z'
+    CashoutActionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Cashout status updated successfully
+        data:
+          $ref: '#/components/schemas/Cashout'
+    CashoutSetting:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 5ef93237-4ea1-4d31-9e6c-1c0f5aedecd7
+        chargeRate:
+          type: string
+          example: '2'
+        minimumCashoutAmount:
+          type: string
+          example: '1000'
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T09:53:05.302Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T11:11:52.282Z'
+    CashoutSettingResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Cashout setting retrieved successfully
+        data:
+          $ref: '#/components/schemas/CashoutSetting'
+    UpdateCashoutSettingRequest:
+      type: object
+      properties:
+        chargeRate:
+          type: number
+          example: 5
+        minimumCashoutAmount:
+          type: number
+          example: 1500
+    UpdateCashoutSettingResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Cashout setting updated successfully
+        data:
+          $ref: '#/components/schemas/CashoutSetting'
+    VendorAccountStatus:
+      type: string
+      enum:
+        - ACTIVE
+        - SUSPENDED
+        - BLOCKED
+        - CLOSED
+    UploadImageProduct:
+      type: object
+      required:
+        - productId
+        - images
+      properties:
+        productId:
+          type: string
+          description: Product ID associated with uploaded images
+          example: cmc123abc456
+        altText:
+          type: string
+          example: Front view of the product
+        images:
+          type: array
+          maxItems: 5
+          items:
+            type: string
+            format: binary
+    UploadImageResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Images uploaded successfully
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Images'
+    UpdateImageRequest:
+      type: object
+      properties:
+        altText:
+          type: string
+          nullable: true
+          maxLength: 255
+          example: Front view of the product
+      additionalProperties: false
+    UpdateImageResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Image metadata updated successfully
+        data:
+          $ref: '#/components/schemas/Images'
+    ReplaceImageRequest:
+      type: object
+      required:
+        - image
+      properties:
+        image:
+          type: string
+          format: binary
+          description: New image file to replace the existing image
+    ReplaceImageResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Image replaced successfully
+        data:
+          $ref: '#/components/schemas/Images'
+    DeleteImageResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Image deleted successfully
+        data:
+          type: boolean
+          example: true
+    AdminDashboardStats:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Admin dashboard statistics retrieved successfully
+        data:
+          type: object
+          properties:
+            totalVendors:
+              type: object
+              properties:
+                count:
+                  type: integer
+                  example: 2
+                byStatus:
+                  type: object
+                  additionalProperties:
+                    type: integer
+                  example:
+                    ACTIVE: 2
+            totalProducts:
+              type: integer
+              example: 3
+            totalOrders:
+              type: object
+              properties:
+                count:
+                  type: integer
+                  example: 5
+                byStatus:
+                  type: object
+                  additionalProperties:
+                    type: integer
+                  example:
+                    DELIVERED: 3
+                    PENDING: 2
+            totalRevenue:
+              type: number
+              example: 170
+            totalCommissionEarned:
+              type: number
+              example: 4.25
+            recentOrders:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: 123e4567-e89b-12d3-a456-426614174001
+                  totalPrice:
+                    type: number
+                    example: 100
+                  status:
+                    type: string
+                    example: DELIVERED
+            codPendingOrders:
+              type: integer
+              example: 1
+    VendorListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Vendor list retrieved successfully
+        data:
+          type: object
+          properties:
+            vendors:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: 123e4567-e89b-12d3-a456-426614174002
+                  name:
+                    type: string
+                    example: Gadget World
+                  email:
+                    type: string
+                    format: email
+                    example: gadgetworld@example.com
+                  accountStatus:
+                    type: string
+                    example: ACTIVE
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                limit:
+                  type: integer
+                  example: 10
+                totalVendor:
+                  type: integer
+                  example: 2
+                totalPages:
+                  type: integer
+                  example: 1
+    CustomerListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Customer list retrieved successfully
+        data:
+          type: object
+          properties:
+            customers:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: 123e4567-e89b-12d3-a456-426614174003
+                  user:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: John Doe
+                      email:
+                        type: string
+                        format: email
+                        example: johndoe@example.com
+                      phone:
+                        type: string
+                        example: '+8801700000000'
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                limit:
+                  type: integer
+                  example: 10
+                totalCustomer:
+                  type: integer
+                  example: 1
+                totalPages:
+                  type: integer
+                  example: 1
+    AdminAccountStatusUpdateRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - SUSPENDED
+            - DELETED
+          example: ACTIVE
+          description: The new status for the admin account
+    AdminAccountStatusUpdateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Admin account status updated successfully
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 123e4567-e89b-12d3-a456-426614174005
+            name:
+              type: string
+              example: Admin User
+            email:
+              type: string
+              format: email
+              example: admin@example.com
+            accountStatus:
+              type: string
+              example: ACTIVE
+    VendorDashboardStats:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Vendor dashboard statistics retrieved successfully
+        data:
+          type: object
+          properties:
+            products:
+              type: object
+              properties:
+                totalProducts:
+                  type: integer
+                  example: 2
+                productsList:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: 123e4567-e89b-12d3-a456-426614174003
+                      name:
+                        type: string
+                        example: Wireless Ergonomic Mouse
+                      price:
+                        type: number
+                        example: 45
+                      stock:
+                        type: integer
+                        example: 10
+                      status:
+                        type: string
+                        example: ACTIVE
+            orders:
+              type: object
+              properties:
+                total:
+                  type: integer
+                  example: 3
+                byStatus:
+                  type: object
+                  additionalProperties:
+                    type: integer
+                  example:
+                    DELIVERED: 2
+                    PENDING: 1
+            financial:
+              type: object
+              properties:
+                totalEarnings:
+                  type: number
+                  example: 80
+                totalPendingEarnings:
+                  type: number
+                  example: 45
+                platformCommission:
+                  type: number
+                  example: 2
+                netVendorEarnings:
+                  type: number
+                  example: 78
+            codOrders:
+              type: integer
+              example: 1
+    VendorOrdersResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Vendor orders retrieved successfully
+        data:
+          type: object
+          properties:
+            vendorOrders:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: 123e4567-e89b-12d3-a456-426614174001
+                  status:
+                    type: string
+                    example: DELIVERED
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          example: 123e4567-e89b-12d3-a456-426614174004
+                        price:
+                          type: number
+                          example: 45
+                        quantity:
+                          type: integer
+                          example: 1
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                limit:
+                  type: integer
+                  example: 10
+                totalPages:
+                  type: integer
+                  example: 1
+    VendorDeliveryChargeRequest:
+      type: object
+      required:
+        - insideCharge
+        - outsideCharge
+      properties:
+        insideCharge:
+          type: number
+          example: 60
+        outsideCharge:
+          type: number
+          example: 120
+    VendorDeliveryChargeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Vendor delivery charge is set
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 123e4567-e89b-12d3-a456-426614174009
+            insideCharge:
+              type: number
+              example: 60
+            outsideCharge:
+              type: number
+              example: 120
+    VendorCustomerListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Customer list retrieved successfully
+        data:
+          type: object
+          properties:
+            customers:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: 123e4567-e89b-12d3-a456-426614174003
+                  user:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: John Doe
+                      email:
+                        type: string
+                        format: email
+                        example: johndoe@example.com
+                      phone:
+                        type: string
+                        example: '+8801700000000'
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                limit:
+                  type: integer
+                  example: 10
+                totalCustomer:
+                  type: integer
+                  example: 1
+                totalPages:
+                  type: integer
+                  example: 1
+    CustomerDashboardStats:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Customer dashboard data retrieved successfully
+        data:
+          type: object
+          properties:
+            profile:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                  example: 123e4567-e89b-12d3-a456-426614174005
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@example.com
+                address:
+                  type: string
+                  example: Sylhet, Bangladesh
+            orders:
+              type: object
+              properties:
+                count:
+                  type: integer
+                  example: 2
+                list:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: 123e4567-e89b-12d3-a456-426614174001
+                      totalPrice:
+                        type: number
+                        example: 100
+                      status:
+                        type: string
+                        example: DELIVERED
+                      customerName:
+                        type: string
+                        example: John Doe
+    CustomerOrderDetailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Order detail retrieved successfully
+        data:
+          type: object
+          properties:
+            order:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: 123e4567-e89b-12d3-a456-426614174001
+                  customerName:
+                    type: string
+                    example: John Doe
+                  totalPrice:
+                    type: number
+                    example: 100
+                  status:
+                    type: string
+                    example: DELIVERED
+                  customerAddress:
+                    type: string
+                    example: Sylhet, Bangladesh
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                              example: 123e4567-e89b-12d3-a456-426614174003
+                            name:
+                              type: string
+                              example: Wireless Ergonomic Mouse
+                            price:
+                              type: number
+                              example: 45
+                            images:
+                              type: array
+                              items:
+                                type: string
+                              example: []
+                        quantity:
+                          type: integer
+                          example: 1
+                  payment:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        paymentMethod:
+                          type: string
+                          example: COD
+                        paymentStatus:
+                          type: string
+                          example: PENDING
+    Division:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 2f0fc178-7e70-44b3-a7b0-f2ac7475c8a1
+        name:
+          type: string
+          example: Chattogram
+      required:
+        - id
+        - name
+    District:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: c1f72f91-8e8e-4a5f-9e6b-6f2f6f5b5f5a
+        name:
+          type: string
+          example: Cox's Bazar
+        divisionId:
+          type: string
+          format: uuid
+          example: 2f0fc178-7e70-44b3-a7b0-f2ac7475c8a1
+      required:
+        - id
+        - name
+        - divisionId
+    SubscriptionPlanType:
+      type: string
+      enum:
+        - FREE_TRIAL
+        - INSTALLMENT
+        - STANDARD
+        - MEDIUM
+        - PREMIUM
+      example: STANDARD
+    SubscriptionPlan:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 7f4df13e-8b4f-4cb3-bfc1-5570b3c32f21
+        name:
+          type: string
+          example: Standard Plan
+        type:
+          $ref: '#/components/schemas/SubscriptionPlanType'
+        price:
+          type: number
+          example: 999
+        durationDays:
+          type: integer
+          example: 30
+        isActive:
+          type: boolean
+          example: true
+        isTrial:
+          type: boolean
+          example: false
+        description:
+          type: string
+          nullable: true
+          example: Basic monthly subscription plan for vendors
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T10:00:00.000Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T10:00:00.000Z'
+    SubscriptionPlanListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Subscription plans retrieved successfully
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriptionPlan'
+    VendorSubscriptionStatus:
+      type: string
+      enum:
+        - TRIAL
+        - ACTIVE
+        - PENDING_PAYMENT
+        - EXPIRED
+        - CANCELLED
+      example: ACTIVE
+    SubscriptionPaymentMethod:
+      type: string
+      enum:
+        - SSLCOMMERZ
+      example: SSLCOMMERZ
+    PaymentStatus:
+      type: string
+      enum:
+        - PENDING
+        - PAID
+        - FAILED
+        - CANCELLED
+      example: PENDING
+    SubscriptionPaymentPurpose:
+      type: string
+      enum:
+        - SUBSCRIPTION_PLAN
+        - INSTALLMENT_FEE
+      example: SUBSCRIPTION_PLAN
+    SubscriptionPayment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 6a4d1b8e-11d4-4e36-a7e0-3d3f48340a11
+        vendorId:
+          type: string
+          format: uuid
+          example: 90656f9f-32a6-4c83-9c5c-9a8c8afc3b9a
+        subscriptionId:
+          type: string
+          format: uuid
+          nullable: true
+          example: c2df2a6a-20ef-40a7-bad8-c8ee4fbf50a4
+        amount:
+          type: number
+          example: 999
+        transactionId:
+          type: string
+          nullable: true
+          example: SUB-TXN-1781114175634
+        paymentMethodSchema:
+          $ref: '#/components/schemas/SubscriptionPaymentMethod'
+        paymentStatus:
+          $ref: '#/components/schemas/PaymentStatus'
+        purpose:
+          $ref: '#/components/schemas/SubscriptionPaymentPurpose'
+        note:
+          type: string
+          nullable: true
+          example: SSLCommerz payment note
+        paidAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2026-06-10T10:15:00.000Z'
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T10:00:00.000Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T10:15:00.000Z'
+    VendorSubscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: c2df2a6a-20ef-40a7-bad8-c8ee4fbf50a4
+        vendorId:
+          type: string
+          format: uuid
+          example: 90656f9f-32a6-4c83-9c5c-9a8c8afc3b9a
+        planId:
+          type: string
+          format: uuid
+          example: 7f4df13e-8b4f-4cb3-bfc1-5570b3c32f21
+        status:
+          $ref: '#/components/schemas/VendorSubscriptionStatus'
+        startDate:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2026-06-10T10:15:00.000Z'
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2026-07-10T10:15:00.000Z'
+        paidAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2026-06-10T10:15:00.000Z'
+        amountPaid:
+          type: number
+          example: 999
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T10:00:00.000Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2026-06-10T10:15:00.000Z'
+        plan:
+          $ref: '#/components/schemas/SubscriptionPlan'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriptionPayment'
+    VendorSubscriptionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Vendor subscription retrieved successfully
+        data:
+          type: object
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/VendorSubscription'
+    CheckoutSubscriptionRequest:
+      type: object
+      required:
+        - planId
+      properties:
+        planId:
+          type: string
+          example: 41adceac-46fc-44f4-94c0-d5f945b127b8
+    CheckoutSubscriptionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Subscription checkout created successfully
+        data:
+          type: object
+          properties:
+            subscription:
+              $ref: '#/components/schemas/VendorSubscription'
+            paymentId:
+              type: string
+              format: uuid
+              example: 6a4d1b8e-11d4-4e36-a7e0-3d3f48340a11
+            transactionId:
+              type: string
+              example: SUB-TXN-1781114175634
+            gatewayPageURL:
+              type: string
+              example: https://sandbox.sslcommerz.com/EasyCheckOut/test-session
+    CreateSubscriptionPlanRequest:
+      type: object
+      required:
+        - name
+        - type
+        - price
+        - durationDays
+      properties:
+        name:
+          type: string
+          minLength: 2
+          example: Standard Plan
+        type:
+          $ref: '#/components/schemas/SubscriptionPlanType'
+        price:
+          type: number
+          minimum: 0
+          example: 999
+        durationDays:
+          type: integer
+          minimum: 1
+          example: 30
+        isActive:
+          type: boolean
+          example: true
+        isTrial:
+          type: boolean
+          example: false
+        description:
+          type: string
+          example: Basic monthly subscription plan for vendors
+    SubscriptionPlanResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Subscription plan created successfully
+        data:
+          $ref: '#/components/schemas/SubscriptionPlan'
+    UpdateSubscriptionPlanRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          example: Updated Standard Plan
+        price:
+          type: number
+          minimum: 0
+          example: 1099
+        durationDays:
+          type: integer
+          minimum: 1
+          example: 30
+        isActive:
+          type: boolean
+          example: true
+        isTrial:
+          type: boolean
+          example: false
+        description:
+          type: string
+          example: Updated monthly subscription plan
+    CreateTrialRequest:
+      type: object
+      properties:
+        trialDays:
+          type: integer
+          minimum: 1
+          maximum: 30
+          default: 3
+          example: 3
+    VendorSubscriptionListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Vendor subscriptions retrieved successfully
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/VendorSubscription'
+  parameters:
+    page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+      description: Page number
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 100
+      description: Number of items per page
+    VendorId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Vendor Unique ID

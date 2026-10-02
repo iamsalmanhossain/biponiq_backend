@@ -1,0 +1,83 @@
+getDivisions:
+  security: []
+  operationId: getDivisions
+
+  tags:
+    - Location
+
+  summary: Get all divisions
+
+  description: Retrieve all divisions ordered by name.
+
+  responses:
+    '200':
+      description: Divisions retrieved successfully
+
+      content:
+        application/json:
+          schema:
+            type: object
+
+            properties:
+              success:
+                type: boolean
+                example: true
+
+              data:
+                type: array
+
+                items:
+                  $ref: '../components/schemas/location.yml#/Division'
+    '401':
+      $ref: '../components/responses/common.yml#/Unauthorized'
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+getDistricts:
+  security: []
+  operationId: getDistricts
+
+  tags:
+    - Location
+
+  summary: Get districts
+
+  description: Retrieve all districts or districts by division.
+
+  parameters:
+    - in: query
+      name: divisionId
+      required: false
+
+      schema:
+        type: string
+        format: uuid
+
+      description: Division ID
+
+  responses:
+    '200':
+      description: Districts retrieved successfully
+
+      content:
+        application/json:
+          schema:
+            type: object
+
+            properties:
+              success:
+                type: boolean
+                example: true
+
+              data:
+                type: array
+
+                items:
+                  $ref: '../components/schemas/location.yml#/District'
+
+    '401':
+      $ref: '../components/responses/common.yml#/Unauthorized'
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'

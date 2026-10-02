@@ -1,0 +1,25 @@
+model VendorCashout {
+  id                 String        @id @default(uuid())
+  vendorId           String
+  requestedAmount    Decimal       @db.Decimal(12, 2)
+  chargeRate         Decimal       @default(2.00) @db.Decimal(5, 2)
+  chargeAmount       Decimal       @db.Decimal(12, 2)
+  payoutAmount       Decimal       @db.Decimal(12, 2)
+  method             CashoutMethod
+  accountHolderName  String
+  accountNumber      String
+  status             CashoutStatus @default(PENDING)
+  adminTransactionId String?
+  failureReason      String?
+  rejectionReason    String?
+  requestedAt        DateTime      @default(now())
+  completedAt        DateTime?
+  failedAt           DateTime?
+  rejectedAt         DateTime?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  totalDeduction     Decimal       @db.Decimal(12, 2)
+  vendor             Vendor        @relation(fields: [vendorId], references: [id])
+
+  @@map("vendor_cashouts")
+}

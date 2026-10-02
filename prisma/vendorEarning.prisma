@@ -1,0 +1,10 @@
+model VendorEarning {
+  id               String    @id @default(uuid())
+  vendorId         String
+  orderItemId      String    @unique
+  grossAmount      Decimal   @default(0) @db.Decimal(12, 2)
+  commissionAmount Decimal   @default(0) @db.Decimal(12, 2)
+  netAmount        Decimal   @default(0) @db.Decimal(12, 2)
+  item             OrderItem @relation(fields: [orderItemId], references: [id])
+  vendor           Vendor    @relation(fields: [vendorId], references: [id])
+}

@@ -1,0 +1,199 @@
+AdminDashboardStats:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Admin dashboard statistics retrieved successfully
+    data:
+      type: object
+      properties:
+        totalVendors:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 2
+            byStatus:
+              type: object
+              additionalProperties:
+                type: integer
+              example:
+                ACTIVE: 2
+        totalProducts:
+          type: integer
+          example: 3
+        totalOrders:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 5
+            byStatus:
+              type: object
+              additionalProperties:
+                type: integer
+              example:
+                DELIVERED: 3
+                PENDING: 2
+        totalRevenue:
+          type: number
+          example: 170.0
+        totalCommissionEarned:
+          type: number
+          example: 4.25
+        recentOrders:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                example: 123e4567-e89b-12d3-a456-426614174001
+              totalPrice:
+                type: number
+                example: 100
+              status:
+                type: string
+                example: DELIVERED
+        codPendingOrders:
+          type: integer
+          example: 1
+
+VendorListResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Vendor list retrieved successfully
+    data:
+      type: object
+      properties:
+        vendors:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                example: 123e4567-e89b-12d3-a456-426614174002
+              name:
+                type: string
+                example: Gadget World
+              email:
+                type: string
+                format: email
+                example: gadgetworld@example.com
+              accountStatus:
+                type: string
+                example: ACTIVE
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 10
+            totalVendor:
+              type: integer
+              example: 2
+            totalPages:
+              type: integer
+              example: 1
+
+CustomerListResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Customer list retrieved successfully
+    data:
+      type: object
+      properties:
+        customers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                example: 123e4567-e89b-12d3-a456-426614174003
+              user:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: John Doe
+                  email:
+                    type: string
+                    format: email
+                    example: johndoe@example.com
+                  phone:
+                    type: string
+                    example: '+8801700000000'
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 10
+            totalCustomer:
+              type: integer
+              example: 1
+            totalPages:
+              type: integer
+              example: 1
+
+AdminAccountStatusUpdateRequest:
+  type: object
+  required:
+    - status
+  properties:
+    status:
+      type: string
+      enum: [ACTIVE, INACTIVE, SUSPENDED, DELETED]
+      example: ACTIVE
+      description: The new status for the admin account
+
+AdminAccountStatusUpdateResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Admin account status updated successfully
+    data:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174005
+        name:
+          type: string
+          example: Admin User
+        email:
+          type: string
+          format: email
+          example: admin@example.com
+        accountStatus:
+          type: string
+          example: ACTIVE

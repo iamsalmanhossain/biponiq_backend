@@ -1,0 +1,384 @@
+openapi: 3.0.0
+
+info:
+  title: E-Commerce API
+  version: 1.0.0
+  description: REST API Documentation
+
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:5000/api/v1
+    description: local host
+
+  - url: https://server-squad-backend.vercel.app/api/v1
+    description: production level
+
+tags:
+  - name: Admin Registration
+    description: Admin Registration API
+
+  - name: Vendor Registration
+    description: Vendor Registration API
+
+  - name: Authentication
+    description: Authentication APIs
+
+  - name: Location
+    description: Division and District APIs
+
+  - name: Product
+    description: Product APIs
+
+  - name: Image Upload
+    description: Image Upload APIs
+
+  - name: Order
+    description: Order APIs
+
+  - name: Payment
+    description: Payment APIs
+
+  - name: Cashout
+    description: Cashout APIs
+
+  - name: Subscription
+    description: Subscription plan, checkout, trial, and payment confirmation APIs
+
+  - name: Admin Dashboard
+    description: Admin Dashboard APIs
+
+  - name: Vendor Dashboard
+    description: Vendor Dashboard APIs
+
+  - name: Customer Dashboard
+    description: Customer Dashboard APIs
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: refreshToken
+
+  responses:
+    Success:
+      $ref: './components/responses/common.yml#/Success'
+
+    BadRequest:
+      $ref: './components/responses/common.yml#/BadRequest'
+
+    Unauthorized:
+      $ref: './components/responses/common.yml#/Unauthorized'
+
+    ValidationError:
+      $ref: './components/responses/common.yml#/ValidationError'
+
+    ServerError:
+      $ref: './components/responses/common.yml#/ServerError'
+
+    Forbidden:
+      $ref: './components/responses/common.yml#/Forbidden'
+
+    Conflict:
+      $ref: './components/responses/common.yml#/Conflict'
+
+    InvalidVerificationCode:
+      $ref: './components/responses/common.yml#/InvalidVerificationCode'
+
+    LogoutSuccess:
+      $ref: './components/responses/common.yml#/LogoutSuccess'
+
+    VendorNotFound:
+      $ref: './components/responses/vendor.yml#/VendorNotFound'
+
+    InternalServerError:
+      $ref: './components/responses/vendor.yml#/InternalServerError'
+
+paths:
+  /auth/admin/register:
+    post:
+      $ref: './paths/admin.auth.yml#/register'
+
+  /auth/vendor/register:
+    post:
+      $ref: './paths/vendor.auth.yml#/register'
+
+  /auth/verify-email:
+    post:
+      $ref: './paths/auth-common.yml#/verify-email'
+
+  /auth/login:
+    post:
+      $ref: './paths/auth-common.yml#/login'
+
+  /auth/refresh-token:
+    post:
+      $ref: './paths/auth-common.yml#/refreshToken'
+
+  /auth/logout:
+    post:
+      $ref: './paths/auth-common.yml#/logout'
+
+  # Order Routes
+
+  /orders:
+    post:
+      $ref: './paths/order/placeOrder.yml#/placeOrder'
+
+    get:
+      $ref: './paths/order/getAllOrderList.yml#/getAllOrderList'
+
+  /orders/{id}:
+    get:
+      $ref: './paths/order/getSingleOrder.yml#/getSingleOrder'
+
+  /orders/{orderId}/status:
+    patch:
+      $ref: './paths/order/updateOrderStatus.yml#/updateOrderStatus'
+
+  /orders/track:
+    get:
+      $ref: './paths/order/trackOrder.yml#/trackOrder'
+
+  # Product routes
+  /products/public:
+    get:
+      $ref: './paths/product.yml#/getPublicProducts'
+
+  /products/product/{id}:
+    get:
+      $ref: './paths/product.yml#/getPublicProduct'
+
+  /products/admin/products:
+    get:
+      $ref: './paths/product.yml#/getProductsByAdmin'
+
+  /products/admin/products/{id}/restore:
+    patch:
+      $ref: './paths/product.yml#/restoreProductByAdmin'
+
+  /products/vendor/products:
+    get:
+      $ref: './paths/product.yml#/getVendorProducts'
+
+    post:
+      $ref: './paths/product.yml#/createProduct'
+
+  /products/vendor/products/{id}:
+    patch:
+      $ref: './paths/product.yml#/updateProduct'
+
+  /products/{id}:
+    delete:
+      $ref: './paths/product.yml#/deleteProduct'
+
+  # Payments
+  /payment/success:
+    post:
+      $ref: './paths/payment.yml#/success'
+
+  /payment/fail:
+    post:
+      $ref: './paths/payment.yml#/fail'
+
+  /payment/cancel:
+    post:
+      $ref: './paths/payment.yml#/cancel'
+
+  /payment/ipn:
+    post:
+      $ref: './paths/payment.yml#/ipn'
+
+  #Cashout
+  /cashout/vendor/summary:
+    get:
+      $ref: './paths/cashout.yml#/getCashoutSummary'
+
+  /cashout/vendor/request:
+    post:
+      $ref: './paths/cashout.yml#/createCashout'
+
+  /cashout/admin/cashouts:
+    get:
+      $ref: './paths/cashout.yml#/getCashoutsForAdmin'
+
+  /cashout/admin/cashouts/{id}/status:
+    patch:
+      $ref: './paths/cashout.yml#/updateCashoutStatus'
+
+  /cashout/admin/settings:
+    get:
+      $ref: './paths/cashout.yml#/getCashoutSetting'
+    patch:
+      $ref: './paths/cashout.yml#/updateCashoutSetting'
+
+  /vendor/get-vendor-profile:
+    get:
+      $ref: './paths//vendor.yml#/getVendorProfile'
+
+  /vendor/update-vendor-profile:
+    patch:
+      $ref: './paths/vendor.yml#/updateVendorProfile'
+
+  /vendor/delete-vendor-profile:
+    delete:
+      $ref: './paths//vendor.yml#/deleteVendorProfile'
+
+  /admin/get-all-vendor:
+    get:
+      $ref: './paths/admin.yml#/getAllVendor'
+
+  /admin/update-vendor-status/{id}:
+    patch:
+      $ref: './paths/admin.yml#/updateVendorStatus'
+
+  /admin/delete-vendor-profile/{id}:
+    delete:
+      $ref: './paths/admin.yml#/deleteVendorProfile'
+
+  /admin/get-all-orders:
+    get:
+      $ref: './paths/admin.yml#/getAllOrders'
+
+  /admin/restore-vendor/{id}:
+    patch:
+      $ref: './paths/admin.yml#/restoreVendorProfile'
+
+  /admin/get-order-stats/{id}:
+    get:
+      $ref: './paths/admin.yml#/getOrderStats'
+
+  # upload APIs
+
+  /uploads/product-images:
+    post:
+      $ref: './paths/upload.yml#/ImageUpload'
+
+  /uploads:
+    get:
+      $ref: './paths/upload.yml#/GetAllImages'
+
+  /upload/related-images/{id}:
+    get:
+      $ref: './paths/upload.yml#/GetProductRelatedImages'
+
+  /uploads/{id}:
+    get:
+      $ref: './paths/upload.yml#/GetSingleImage'
+
+  /uploads/meta/{id}:
+    patch:
+      $ref: './paths/upload.yml#/UpdateImageMetaData'
+
+  /uploads/{id}/replace:
+    patch:
+      $ref: './paths/upload.yml#/ReplaceImage'
+
+  /uploads/delete/{id}:
+    delete:
+      $ref: './paths/upload.yml#/DeleteImage'
+
+  #Dashboard Routes
+  #Admin Dashboard
+  /dashboards/admin:
+    get:
+      $ref: './paths/dashboard/admin.yml#/adminDashboardStats'
+
+  /dashboards/admin/vendors:
+    get:
+      $ref: './paths/dashboard/admin.yml#/getVendorList'
+
+  /dashboards/admin/customers:
+    get:
+      $ref: './paths/dashboard/admin.yml#/getGuestCustomerList'
+
+  /dashboards/admin/admin-account-status/{id}:
+    patch:
+      $ref: './paths/dashboard/admin.yml#/updateAdminAccountStatus'
+
+  #Vendor Dashboard
+  /dashboards/vendor:
+    get:
+      $ref: './paths/dashboard/vendor.yml#/vendorDashboardStats'
+
+  /dashboards/vendor/orders:
+    get:
+      $ref: './paths/dashboard/vendor.yml#/getVendorOrders'
+
+  /dashboards/vendor/delivery-charge:
+    patch:
+      $ref: './paths/dashboard/vendor.yml#/vendorDeliveryCharge'
+
+  /dashboards/vendor/customers:
+    get:
+      $ref: './paths/dashboard/vendor.yml#/getGuestCustomerList'
+
+  #Customer Dashboard
+  /dashboards/customer:
+    get:
+      $ref: './paths/dashboard/customer.yml#/customerDashboardStats'
+
+  /dashboards/customer/orders:
+    get:
+      $ref: './paths/dashboard/customer.yml#/getOrderDetail'
+
+  # Location Routes
+  /location/divisions:
+    get:
+      $ref: './paths/location.yml#/getDivisions'
+
+  /location/districts:
+    get:
+      $ref: './paths/location.yml#/getDistricts'
+
+  # Subscription routes
+  /subscriptions/plans:
+    get:
+      $ref: './paths/subscription.yml#/getActivePlansForVendor'
+
+  /subscriptions/my-subscription:
+    get:
+      $ref: './paths/subscription.yml#/getMySubscription'
+
+  /subscriptions/trial-status:
+    get:
+      $ref: './paths/subscription.yml#/getTrialStatus'
+
+  /subscriptions/checkout:
+    post:
+      $ref: './paths/subscription.yml#/checkoutSubscriptionPlan'
+
+  /subscriptions/admin/plans:
+    get:
+      $ref: './paths/subscription.yml#/getSubscriptionPlansForAdmin'
+    post:
+      $ref: './paths/subscription.yml#/createSubscriptionPlan'
+
+  /subscriptions/admin/plans/{planId}:
+    patch:
+      $ref: './paths/subscription.yml#/updateSubscriptionPlan'
+    delete:
+      $ref: './paths/subscription.yml#/deleteSubscriptionPlan'
+
+  /subscriptions/admin/vendors/{vendorId}/trial:
+    post:
+      $ref: './paths/subscription.yml#/createTrialForVendor'
+
+  /subscriptions/admin/vendors/{vendorId}:
+    get:
+      $ref: './paths/subscription.yml#/getVendorSubscriptionsForAdmin'
+
+      #  "id": "41adceac-46fc-44f4-94c0-d5f945b127b8",
+      # "name": "Standard Plan",
+      # "type": "STANDARD",
+      # "price": 999,
+      # "durationDays": 30,
+      # desc

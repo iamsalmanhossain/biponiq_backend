@@ -1,0 +1,138 @@
+success:
+  security: []
+  operationId: paymentSuccessCallback
+
+  tags:
+    - Payment
+
+  summary: SSLCommerz Success Callback
+
+  description: Receive SSLCommerz success callback. Final payment verification is handled by IPN.
+
+  requestBody:
+    required: true
+
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/payment.yml#/SSLCommerzCallbackRequest'
+
+  responses:
+    '200':
+      description: Payment success callback received
+
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/payment.yml#/PaymentCallbackResponse'
+
+    '400':
+      description: Bad Request
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+fail:
+  security: []
+  operationId: paymentFailCallback
+
+  tags:
+    - Payment
+
+  summary: SSLCommerz Fail Callback
+
+  description: Receive SSLCommerz fail callback. Final failed status update is handled by IPN.
+
+  requestBody:
+    required: true
+
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/payment.yml#/SSLCommerzCallbackRequest'
+
+  responses:
+    '200':
+      description: Payment fail callback received
+
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/payment.yml#/PaymentFailResponse'
+
+    '400':
+      description: Bad Request
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+cancel:
+  security: []
+  operationId: paymentCancelCallback
+
+  tags:
+    - Payment
+
+  summary: SSLCommerz Cancel Callback
+
+  description: Receive SSLCommerz cancel callback. Final cancelled status update is handled by IPN.
+
+  requestBody:
+    required: true
+
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/payment.yml#/SSLCommerzCallbackRequest'
+
+  responses:
+    '200':
+      description: Payment cancel callback received
+
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/payment.yml#/PaymentCancelResponse'
+
+    '400':
+      description: Bad Request
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+ipn:
+  security: []
+  operationId: paymentIpnCallback
+
+  tags:
+    - Payment
+
+  summary: SSLCommerz IPN Callback
+
+  description: Receive SSLCommerz IPN callback, validate transaction with SSLCommerz validation API, and update order payment or subscription payment status.
+
+  requestBody:
+    required: true
+
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/payment.yml#/SSLCommerzIpnRequest'
+
+  responses:
+    '200':
+      description: Payment IPN received
+
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/payment.yml#/PaymentIpnResponse'
+
+    '400':
+      description: Invalid SSLCommerz payment status, missing validation ID, validation failed, or amount mismatch
+
+    '404':
+      description: Order payment or subscription payment not found
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'

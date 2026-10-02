@@ -1,0 +1,126 @@
+getVendorProfile:
+  security:
+    - BearerAuth: []
+  operationId: getVendorProfile
+  tags:
+    - Vendor Dashboard
+
+  summary: Get Vendor Profile
+  description: Get own vendor profile by vendor id
+
+  responses:
+    '200':
+      description: Vendor Profile Retrieved Successfully
+      content:
+        application/json:
+          example:
+            success: true
+            message: Vendor profile retrieved successfully
+            data:
+              id: 'ac7cb1fe-4894-499d-938f-c0855444d3a1'
+              avatar: 'https://i.pravatar.cc/300?img=12'
+              shopName: 'Salman sssssssssss'
+              shopLogo: null
+              subDomain: 'salman-hossain12345@shop'
+              user:
+                name: 'Md. Salman Hossain Updated'
+                email: 'salman-hossain12345@gmail.com'
+                phone: '01362397610'
+
+    '400':
+      description: Bad Request (Invalid Vendor ID)
+    '401':
+      description: Unauthorized (No token or invalid token)
+    '404':
+      $ref: '../components/responses/vendor.yml#/VendorNotFound'
+    '500':
+      $ref: '../components/responses/vendor.yml#/InternalServerError'
+
+updateVendorProfile:
+  security:
+    - BearerAuth: []
+  operationId: updateVendorProfile
+  tags:
+    - Vendor Dashboard
+
+  summary: Update Vendor Profile
+  description: Update own vendor profile information
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/vendor.yml#/VendorUpdate'
+          
+        example:
+          avatar: 'https://i.pravatar.cc/300?img=12'
+          shopName: 'Salman '
+          shopLogo: 'https://via.placeholder.com/300x300.png?text=New+Shop+Logo+Updated'
+          name: 'Md. Salman Hossain Updated'
+          phone: '01712345675'
+
+  responses:
+    '200':
+      description: Vendor Profile Updated Successfully
+      content:
+        application/json:
+          example:
+            success: true
+            message: Vendor profile updated successfully
+            data:
+              avatar: 'https://i.pravatar.cc/300?img=12'
+              shopName: 'Salman '
+              shopLogo: 'https://via.placeholder.com/300x300.png?text=New+Shop+Logo+Updated'
+              user:
+                name: 'Md. Salman Hossain Updated'
+                phone: '01712345675'
+
+    '400':
+      description: Validation Error
+    '401':
+      description: Unauthorized
+    '404':
+      $ref: '../components/responses/vendor.yml#/VendorNotFound'
+    '500':
+      $ref: '../components/responses/vendor.yml#/InternalServerError'
+
+deleteVendorProfile:
+  security:
+    - BearerAuth: []
+  operationId: deleteVendorProfile
+  tags:
+    - Vendor Dashboard
+
+  summary: Delete Vendor Profile
+  description: Soft delete vendor profile by vendor id
+
+  responses:
+    '200':
+      description: Vendor Deleted Successfully
+      content:
+        application/json:
+          example:
+            success: true
+            message: Vendor profile delete successfully
+            data:
+              id: '21b304b7-01b6-463f-b3ae-f159fce69b0c'
+              name: 'Nazmul Khan5'
+              email: 'nazmul@5example.com'
+              phone: '01711823511'
+              password: '$2b$12$TITEN38bQitg7y.BJz4LZudnlxFiAW57AVm7iKHt.7Hs80yWjT8j6'
+              role: 'VENDOR'
+              isDeleted: true
+              deletedAt: '2026-06-10T17:56:05.651Z'
+              isVerified: true
+              createdAt: '2026-06-10T12:04:13.283Z'
+              updatedAt: '2026-06-10T17:56:05.651Z'
+
+    '400':
+      description: Bad Request (Invalid Vendor ID)
+    '401':
+      description: Unauthorized Access
+    '404':
+      $ref: '../components/responses/vendor.yml#/VendorNotFound'
+    '500':
+      $ref: '../components/responses/vendor.yml#/InternalServerError'

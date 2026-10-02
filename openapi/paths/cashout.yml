@@ -1,0 +1,230 @@
+getCashoutSetting:
+  security:
+    - BearerAuth: []
+  operationId: getCashoutSetting
+  tags:
+    - Cashout
+  summary: Get cashout settings
+  description: Get current cashout charge rate and minimum cashout amount.
+
+  responses:
+    '200':
+      description: Cashout setting retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/cashout.yml#/CashoutSettingResponse'
+
+    '404':
+      description: Cashout setting not found
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+updateCashoutSetting:
+  security:
+    - BearerAuth: []
+  operationId: updateCashoutSetting
+  tags:
+    - Cashout
+  summary: Update cashout settings
+  description: Update cashout charge rate or minimum cashout amount.
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/cashout.yml#/UpdateCashoutSettingRequest'
+
+  responses:
+    '200':
+      description: Cashout setting updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/cashout.yml#/UpdateCashoutSettingResponse'
+
+    '400':
+      description: Invalid cashout setting payload
+
+    '422':
+      $ref: '../components/responses/common.yml#/ValidationError'
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+getCashoutSummary:
+  security:
+    - BearerAuth: []
+  operationId: getCashoutSummary
+  tags:
+    - Cashout
+  summary: Get vendor cashout summary
+  description: Get vendor lifetime earning calculated from paid order items, pending cashout amount, lifetime cashout amount, available balance, and withdrawable balance.
+
+  responses:
+    '200':
+      description: Cashout summary retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/cashout.yml#/CashoutSummaryResponse'
+
+    '404':
+      description: Vendor or cashout setting not found
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+createCashout:
+  security:
+    - BearerAuth: []
+  operationId: createCashout
+  tags:
+    - Cashout
+  summary: Create vendor cashout request
+  description: Create a cashout request for a vendor. Requested amount will be locked while status is PENDING.
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/cashout.yml#/CreateCashoutRequest'
+
+  responses:
+    '201':
+      description: Cashout request created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/cashout.yml#/CreateCashoutResponse'
+
+    '400':
+      description: Minimum cashout, pending request, or insufficient balance validation error
+
+    '422':
+      $ref: '../components/responses/common.yml#/ValidationError'
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+getCashoutsForAdmin:
+  security:
+    - BearerAuth: []
+  operationId: getCashoutsForAdmin
+  tags:
+    - Cashout
+  summary: Get cashout requests for admin
+  description: Get cashout requests for admin with pagination, status filter, method filter, and search by cashoutId or vendorId.
+
+  parameters:
+    - in: query
+      name: page
+      required: false
+      schema:
+        type: number
+      example: 1
+
+    - in: query
+      name: limit
+      required: false
+      schema:
+        type: number
+      example: 10
+
+    - in: query
+      name: status
+      required: false
+      schema:
+        $ref: '../components/schemas/cashout.yml#/CashoutStatus'
+      example: PENDING
+
+    - in: query
+      name: method
+      required: false
+      schema:
+        $ref: '../components/schemas/cashout.yml#/CashoutMethod'
+      example: BKASH
+
+    - in: query
+      name: searchTerm
+      required: false
+      schema:
+        type: string
+      example: d7b9687d-dd13-4dee-b78a-1773c5b1b50e
+
+  responses:
+    '200':
+      description: Cashout requests retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/cashout.yml#/AdminCashoutListResponse'
+
+    '400':
+      description: Bad request
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+updateCashoutStatus:
+  security:
+    - BearerAuth: []
+  operationId: updateCashoutStatus
+  tags:
+    - Cashout
+  summary: Update cashout status
+  description: Update a pending cashout request status to COMPLETED, REJECTED, or FAILED.
+
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+      example: 52054f5c-6f64-42fc-9c85-80c33104f43a
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/cashout.yml#/UpdateCashoutStatusRequest'
+        examples:
+          complete:
+            summary: Complete cashout
+            value:
+              status: COMPLETED
+              adminTransactionId: BKASH123456
+          reject:
+            summary: Reject cashout
+            value:
+              status: REJECTED
+              rejectionReason: Invalid account information
+          fail:
+            summary: Fail cashout
+            value:
+              status: FAILED
+              failureReason: bKash transfer failed
+
+  responses:
+    '200':
+      description: Cashout status updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/cashout.yml#/CashoutActionResponse'
+
+    '400':
+      description: Only pending cashout can be updated or required reason/transaction ID is missing
+
+    '404':
+      description: Cashout request not found
+
+    '422':
+      $ref: '../components/responses/common.yml#/ValidationError'
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'

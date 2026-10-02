@@ -1,0 +1,152 @@
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURNED
+  REFUNDED
+  FAILED
+  COMPLETED
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  OUT_OF_STOCK
+}
+
+enum VendorAccountStatus {
+  ACTIVE
+  SUSPENDED
+  BLOCKED
+  CLOSED
+}
+
+enum AdminAccountStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  BLOCKED
+  CLOSED
+}
+
+enum PaymentMethod {
+  SSLCOMMERZ
+  EPS
+  COD
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+}
+
+enum PaymentResultType {
+  ORDER
+  SUBSCRIPTION
+}
+
+enum CashoutMethod {
+  BKASH
+  NAGAD
+  ROCKET
+}
+
+enum CashoutStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REJECTED
+}
+
+enum UserRole {
+  VENDOR
+  ADMIN
+  AFFILIATE
+}
+
+enum CouponDiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+enum SubscriptionPlanType {
+  FREE_TRIAL
+  INSTALLMENT
+  STANDARD
+  MEDIUM
+  PREMIUM
+  NO_PLAN
+}
+
+enum SubscriptionBillingCycle {
+  MONTHLY
+  SIX_MONTHS
+  YEARLY
+}
+
+enum VendorSubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PENDING_PAYMENT
+  EXPIRED
+  CANCELLED
+}
+
+enum SubscriptionPaymentPurpose {
+  SUBSCRIPTION_PLAN
+  INSTALLMENT_FEE
+  VISITOR_LIMIT_TOPUP
+}
+
+enum EarningType {
+  ORDER_REVENUE
+  COMMISSION_DEDUCTION
+  REFUND_DEDUCTION
+  MANUAL_ADJUSTMENT
+}
+
+enum VerificationType {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
+enum DomainStatus {
+  PENDING
+  CONFIGURING
+  VERIFIED
+  REJECTED
+}
+
+enum StoreDomainType {
+  SUBDOMAIN
+  CUSTOM_DOMAIN
+}
+
+enum PurchasedDomainStatus {
+  PAYMENT_PENDING
+  PAYMENT_FAILED
+  PAYMENT_CANCELLED
+  REGISTRATION_PENDING
+  REGISTERING
+  REGISTERED
+  DNS_CONFIGURING
+  READY_TO_ACTIVATE
+  ACTIVE
+  REGISTRATION_FAILED
+  DNS_FAILED
+}
+
+enum CourierProvider {
+  STEADFAST
+  PATHAO
+  REDX
+  COURIER_BD
+  CARRYBEE
+  PAPERFLY
+}
+

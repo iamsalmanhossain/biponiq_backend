@@ -1,0 +1,11 @@
+model TrustedDevice {
+  id          String   @id @default(uuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  deviceToken String
+  deviceInfo  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, deviceToken])
+}

@@ -1,0 +1,89 @@
+login:
+  security: []
+  operationId: login
+
+  tags:
+    - Authentication
+
+  summary: Login
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/auth.yml#/LoginRequest'
+
+  responses:
+    '200':
+      $ref: '../components/responses/common.yml#/Success'
+
+    '401':
+      $ref: '../components/responses/common.yml#/Unauthorized'
+
+    '403':
+      $ref: '../components/responses/common.yml#/Forbidden'
+
+    '422':
+      $ref: '../components/responses/common.yml#/ValidationError'
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+verify-email:
+  security: []
+  operationId: verifyEmail
+
+  tags:
+    - Authentication
+
+  summary: Verify Email
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/auth.yml#/VerifyEmailRequest'
+
+  responses:
+    '200':
+      $ref: '../components/responses/common.yml#/Success'
+
+    '400':
+      $ref: '../components/responses/common.yml#/InvalidVerificationCode'
+
+    '422':
+      $ref: '../components/responses/common.yml#/ValidationError'
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+refreshToken:
+  security: []
+
+  tags:
+    - Authentication
+  summary: Refresh Access Token
+
+  parameters:
+    - $ref: '../components/parameters/common.yml#/RefreshTokenCookie'
+
+  responses:
+    '200':
+      $ref: '../components/responses/common.yml#/Success'
+
+logout:
+  security: []
+  operationId: logout
+  tags:
+    - Authentication
+  summary: Logout User
+  description: Logout the currently authenticated user by clearing the refresh token cookie.
+
+  responses:
+    '200':
+      $ref: '../components/responses/common.yml#/LogoutSuccess'
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'

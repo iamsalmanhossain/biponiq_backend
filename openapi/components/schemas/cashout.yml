@@ -1,0 +1,341 @@
+CashoutMethod:
+  type: string
+  enum:
+    - BKASH
+    - NAGAD
+    - ROCKET
+
+CashoutStatus:
+  type: string
+  enum:
+    - PENDING
+    - COMPLETED
+    - FAILED
+    - REJECTED
+
+UpdateCashoutStatus:
+  type: string
+  enum:
+    - COMPLETED
+    - REJECTED
+    - FAILED
+
+CreateCashoutRequest:
+  type: object
+  required:
+    - amount
+    - method
+    - accountHolderName
+    - accountNumber
+  properties:
+    amount:
+      type: number
+      example: 5000
+    method:
+      $ref: '#/CashoutMethod'
+    accountHolderName:
+      type: string
+      example: Test Vendor
+    accountNumber:
+      type: string
+      example: '01712345678'
+
+CreatedCashout:
+  type: object
+  properties:
+    cashoutId:
+      type: string
+      example: 43d07ae6-c8ed-4c0d-84b3-d6254a893052
+    requestedAmount:
+      type: string
+      example: '1001'
+    chargeAmount:
+      type: string
+      example: '20.02'
+    payoutAmount:
+      type: string
+      example: '980.98'
+    method:
+      $ref: '#/CashoutMethod'
+    status:
+      $ref: '#/CashoutStatus'
+    requestedAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T11:22:04.989Z'
+
+CreateCashoutResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Cashout request created successfully
+    data:
+      $ref: '#/CreatedCashout'
+
+Cashout:
+  type: object
+  properties:
+    id:
+      type: string
+      example: 52054f5c-6f64-42fc-9c85-80c33104f43a
+    vendorId:
+      type: string
+      example: d59bc444-d489-48e3-a196-a99a25389918
+    requestedAmount:
+      type: string
+      example: '1101'
+    chargeRate:
+      type: string
+      example: '2'
+    chargeAmount:
+      type: string
+      example: '22.02'
+    payoutAmount:
+      type: string
+      example: '1078.98'
+    method:
+      $ref: '#/CashoutMethod'
+    accountHolderName:
+      type: string
+      example: Test Vendor
+    accountNumber:
+      type: string
+      example: '01712345678'
+    status:
+      $ref: '#/CashoutStatus'
+    adminTransactionId:
+      type: string
+      nullable: true
+      example: BKASH123456
+    failureReason:
+      type: string
+      nullable: true
+      example: bKash transfer failed
+    rejectionReason:
+      type: string
+      nullable: true
+      example: Invalid account information
+    requestedAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T06:32:42.603Z'
+    completedAt:
+      type: string
+      format: date-time
+      nullable: true
+      example: '2026-06-10T11:21:00.237Z'
+    failedAt:
+      type: string
+      format: date-time
+      nullable: true
+    rejectedAt:
+      type: string
+      format: date-time
+      nullable: true
+    createdAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T06:32:42.603Z'
+    updatedAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T11:21:00.238Z'
+
+CashoutSummaryResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Cashout summary retrieved successfully
+    data:
+      type: object
+      properties:
+        lifetimeEarning:
+          type: number
+          example: 10000
+        lifetimeCashout:
+          type: number
+          example: 7000
+        pendingCashout:
+          type: number
+          example: 1101
+        availableBalance:
+          type: number
+          example: 1899
+        chargeRate:
+          type: number
+          example: 2
+        withdrawableBalance:
+          type: number
+          example: 1861.02
+        minimumCashout:
+          type: number
+          example: 1000
+        hasMinimumCashoutBalance:
+          type: boolean
+          example: true
+
+AdminCashoutItem:
+  type: object
+  properties:
+    cashoutId:
+      type: string
+      example: d7b9687d-dd13-4dee-b78a-1773c5b1b50e
+    vendorId:
+      type: string
+      example: 90656f9f-32a6-4c83-9c5c-9a8c8afc3b9a
+    vendorName:
+      type: string
+      example: Salman Hossain
+    vendorEmail:
+      type: string
+      example: salman@example.com
+    shopName:
+      type: string
+      example: Salman Electronics
+    requestedAmount:
+      type: string
+      example: '5000'
+    chargeAmount:
+      type: string
+      example: '100'
+    payoutAmount:
+      type: string
+      example: '4900'
+    method:
+      $ref: '#/CashoutMethod'
+    accountHolderName:
+      type: string
+      example: Test Vendor
+    accountNumber:
+      type: string
+      example: '01712345678'
+    status:
+      $ref: '#/CashoutStatus'
+    requestedAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T06:32:42.603Z'
+
+AdminCashoutListResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Pending cashout requests retrieved successfully
+    data:
+      type: object
+      properties:
+        meta:
+          type: object
+          properties:
+            page:
+              type: number
+              example: 1
+            limit:
+              type: number
+              example: 10
+            total:
+              type: number
+              example: 1
+            totalPage:
+              type: number
+              example: 1
+        data:
+          type: array
+          items:
+            $ref: '#/AdminCashoutItem'
+
+UpdateCashoutStatusRequest:
+  type: object
+  required:
+    - status
+  properties:
+    status:
+      $ref: '#/UpdateCashoutStatus'
+    adminTransactionId:
+      type: string
+      example: BKASH123456
+    rejectionReason:
+      type: string
+      example: Invalid account information
+    failureReason:
+      type: string
+      example: bKash transfer failed
+
+CashoutActionResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Cashout status updated successfully
+    data:
+      $ref: '#/Cashout'
+
+CashoutSetting:
+  type: object
+  properties:
+    id:
+      type: string
+      example: 5ef93237-4ea1-4d31-9e6c-1c0f5aedecd7
+    chargeRate:
+      type: string
+      example: '2'
+    minimumCashoutAmount:
+      type: string
+      example: '1000'
+    createdAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T09:53:05.302Z'
+    updatedAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T11:11:52.282Z'
+
+UpdateCashoutSettingRequest:
+  type: object
+  properties:
+    chargeRate:
+      type: number
+      example: 5
+    minimumCashoutAmount:
+      type: number
+      example: 1500
+
+CashoutSettingResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Cashout setting retrieved successfully
+    data:
+      $ref: '#/CashoutSetting'
+
+UpdateCashoutSettingResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Cashout setting updated successfully
+    data:
+      $ref: '#/CashoutSetting'

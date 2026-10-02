@@ -1,0 +1,164 @@
+UploadImageProduct:
+  type: object
+
+  required:
+    - productId
+    - images
+
+  properties:
+    productId:
+      type: string
+      description: Product ID associated with uploaded images
+      example: cmc123abc456
+
+    altText:
+      type: string
+      example: Front view of the product
+
+    images:
+      type: array
+      maxItems: 5
+
+      items:
+        type: string
+        format: binary
+
+UploadImageResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Images uploaded successfully
+
+    data:
+      type: array
+
+      items:
+        $ref: '#/Images'
+
+Images:
+  type: object
+
+  properties:
+    id:
+      type: string
+      example: img_123
+
+    productId:
+      type: string
+      example: prod_123
+
+    imageName:
+      type: string
+      example: shoe-front.jpg
+
+    imageUrl:
+      type: string
+      format: uri
+      example: https://res.cloudinary.com/demo/image/upload/shoe-front.jpg
+
+    altText:
+      type: string
+      example: Front view
+
+    createdAt:
+      type: string
+      format: date-time
+      example: '2026-06-07T10:00:00.000Z'
+
+    updatedAt:
+      type: string
+      format: date-time
+      example: '2026-06-07T10:00:00.000Z'
+
+    product:
+      type: object
+
+      properties:
+        id:
+          type: string
+          example: prod_123
+
+        name:
+          type: string
+          example: Nike Air Max
+
+UpdateImageRequest:
+  type: object
+
+  properties:
+    altText:
+      type: string
+      nullable: true
+      maxLength: 255
+      example: Front view of the product
+
+  additionalProperties: false
+
+UpdateImageResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Image metadata updated successfully
+
+    data:
+      $ref: '#/Images'
+
+ReplaceImageRequest:
+  type: object
+
+  required:
+    - image
+
+  properties:
+    image:
+      type: string
+      format: binary
+      description: New image file to replace the existing image
+
+ReplaceImageResponse:
+  type: object
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Image replaced successfully
+
+    data:
+      $ref: '#/Images'
+
+DeleteImageResponse:
+  type: object
+
+  required:
+    - success
+    - message
+    - data
+
+  properties:
+    success:
+      type: boolean
+      example: true
+
+    message:
+      type: string
+      example: Image deleted successfully
+
+    data:
+      type: boolean
+      example: true

@@ -1,0 +1,323 @@
+getActivePlansForVendor:
+  operationId: getActiveSubscriptionPlansForVendor
+  security: []
+  tags:
+    - Subscription
+  summary: Get active subscription plans
+  description: Public route. Retrieve active subscription plans that vendors can choose from.
+  responses:
+    '200':
+      description: Subscription plans retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/subscription.yml#/SubscriptionPlanListResponse'
+
+    '400':
+      description: Bad Request
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+getMySubscription:
+  operationId: getMySubscription
+  security:
+    - BearerAuth: []
+  tags:
+    - Subscription
+  summary: Get my subscription
+  description: Vendor route. Retrieve the logged-in vendor's current trial, active, or pending subscription.
+  responses:
+    '200':
+      description: Vendor subscription retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/subscription.yml#/VendorSubscriptionResponse'
+    '401':
+      $ref: '../components/responses/common.yml#/Unauthorized'
+    '403':
+      description: Vendor role is required or vendor account is not active
+    '404':
+      description: Vendor not found
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+getTrialStatus:
+  operationId: getTrialStatus
+  security:
+    - BearerAuth: []
+  tags:
+    - Subscription
+  summary: Get my Free Trial status
+  description: Vendor route. Retrieve whether the logged-in vendor has used the Free Trial.
+  responses:
+    '200':
+      description: Trial status retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/subscription.yml#/TrialStatusResponse'
+    '401':
+      $ref: '../components/responses/common.yml#/Unauthorized'
+    '403':
+      description: Vendor role is required or vendor account is not active
+    '404':
+      description: Vendor not found
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+checkoutSubscriptionPlan:
+  operationId: checkoutSubscriptionPlan
+  security:
+    - BearerAuth: []
+  tags:
+    - Subscription
+  summary: Checkout subscription plan
+  description: Vendor route. Create a pending subscription and payment for the selected plan.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/subscription.yml#/CheckoutSubscriptionRequest'
+        example:
+          planId: 7f4df13e-8b4f-4cb3-bfc1-5570b3c32f21
+  responses:
+    '201':
+      description: Subscription checkout created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/subscription.yml#/CheckoutSubscriptionResponse'
+    '400':
+      description: Invalid plan id, inactive plan, or free trial checkout attempt
+    '401':
+      $ref: '../components/responses/common.yml#/Unauthorized'
+    '403':
+      description: Vendor role is required, vendor account is not active, or installment fee is not paid
+    '404':
+      description: Vendor or subscription plan not found
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+getSubscriptionPlansForAdmin:
+  operationId: getSubscriptionPlansForAdmin
+  security:
+    - BearerAuth: []
+  tags:
+    - Subscription
+  summary: Get all subscription plans for admin
+  description: Admin route. Retrieve all subscription plans, including inactive plans.
+  responses:
+    '200':
+      description: Subscription plans retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/subscription.yml#/SubscriptionPlanListResponse'
+    '401':
+      $ref: '../components/responses/common.yml#/Unauthorized'
+    '403':
+      description: Admin role is required
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+createSubscriptionPlan:
+  operationId: createSubscriptionPlan
+  security:
+    - BearerAuth: []
+  tags:
+    - Subscription
+  summary: Create subscription plan
+  description: Admin route. Create a new subscription plan. Plan name and plan type must be unique.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/subscription.yml#/CreateSubscriptionPlanRequest'
+        example:
+          name: Standard Plan
+          type: STANDARD
+          price: 999
+          durationDays: 30
+          isActive: true
+          isTrial: false
+          displayOrder: 1
+          isMostPopular: false
+          description: Basic monthly subscription plan for vendors
+  responses:
+    '201':
+      description: Subscription plan created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/subscription.yml#/SubscriptionPlanResponse'
+    '400':
+      description: Validation error
+    '401':
+      $ref: '../components/responses/common.yml#/Unauthorized'
+    '403':
+      description: Admin role is required
+    '409':
+      description: Plan name or plan type already exists
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+updateSubscriptionPlan:
+  operationId: updateSubscriptionPlan
+  security:
+    - BearerAuth: []
+  tags:
+    - Subscription
+  summary: Update subscription plan
+  description: Admin route. Update an existing subscription plan by planId.
+  parameters:
+    - in: path
+      name: planId
+      required: true
+      description: Subscription plan ID
+      schema:
+        type: string
+        format: uuid
+      example: 7f4df13e-8b4f-4cb3-bfc1-5570b3c32f21
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/subscription.yml#/UpdateSubscriptionPlanRequest'
+        example:
+          name: Updated Standard Plan
+          price: 1099
+          durationDays: 30
+          isActive: true
+          isTrial: false
+          displayOrder: 1
+          isMostPopular: true
+          description: Updated monthly subscription plan
+  responses:
+    '200':
+      description: Subscription plan updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/subscription.yml#/SubscriptionPlanResponse'
+    '400':
+      description: Validation error or planId is required
+    '401':
+      $ref: '../components/responses/common.yml#/Unauthorized'
+    '403':
+      description: Admin role is required
+    '404':
+      description: Subscription plan not found
+    '409':
+      description: Plan name already exists
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+deleteSubscriptionPlan:
+  operationId: deleteSubscriptionPlan
+  security:
+    - BearerAuth: []
+  tags:
+    - Subscription
+  summary: Delete subscription plan
+  description: Admin route. Delete an unused subscription plan.
+  parameters:
+    - in: path
+      name: planId
+      required: true
+      description: Subscription plan ID
+      schema:
+        type: string
+        format: uuid
+      example: 7f4df13e-8b4f-4cb3-bfc1-5570b3c32f21
+  responses:
+    '200':
+      description: Subscription plan deleted successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/subscription.yml#/SubscriptionPlanResponse'
+    '400':
+      description: Plan is already used or planId is required
+    '401':
+      $ref: '../components/responses/common.yml#/Unauthorized'
+    '403':
+      description: Admin role is required
+    '404':
+      description: Subscription plan not found
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+createTrialForVendor:
+  operationId: createTrialForVendor
+  security:
+    - BearerAuth: []
+  tags:
+    - Subscription
+  summary: Create vendor trial
+  description: Admin route. Assign a free trial subscription to a vendor.
+  parameters:
+    - in: path
+      name: vendorId
+      required: true
+      description: Vendor ID
+      schema:
+        type: string
+        format: uuid
+      example: 90656f9f-32a6-4c83-9c5c-9a8c8afc3b9a
+  responses:
+    '201':
+      description: Vendor trial created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/subscription.yml#/VendorSubscriptionResponse'
+    '400':
+      description: Validation error or vendorId is required
+    '401':
+      $ref: '../components/responses/common.yml#/Unauthorized'
+    '403':
+      description: Admin role is required or vendor account is not active
+    '404':
+      description: Vendor not found
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+getVendorSubscriptionsForAdmin:
+  operationId: getVendorSubscriptionsForAdmin
+  security:
+    - BearerAuth: []
+  tags:
+    - Subscription
+  summary: Get vendor subscriptions for admin
+  description: Admin route. Retrieve all subscriptions of a specific vendor.
+  parameters:
+    - in: path
+      name: vendorId
+      required: true
+      description: Vendor ID
+      schema:
+        type: string
+        format: uuid
+      example: 90656f9f-32a6-4c83-9c5c-9a8c8afc3b9a
+  responses:
+    '200':
+      description: Vendor subscriptions retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/subscription.yml#/VendorSubscriptionListResponse'
+    '400':
+      description: vendorId is required
+    '401':
+      $ref: '../components/responses/common.yml#/Unauthorized'
+    '403':
+      description: Admin role is required or vendor account is not active
+    '404':
+      description: Vendor not found
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Affiliate Coupon is Ready!</title>
+</head>
+
+<body
+  style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 40px 20px; color: #334155;">
+
+  <div style="
+    max-width: 600px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    border: 1px solid #e2e8f0;
+  ">
+
+    <!-- Header / Brand -->
+    <div style="text-align: center; margin-bottom: 30px;">
+      <img src="https://www.biponiq.com/logo/logo-cover-black.svg" alt="BIPONIQ Logo"
+        style="max-width: 180px; height: auto; display: inline-block;"
+        onerror="this.style.display='none'; document.getElementById('text-logo').style.display='block';">
+      <div id="text-logo"
+        style="display: none; color: #00BC7D; font-size: 28px; font-weight: 800; letter-spacing: -0.025em; text-transform: uppercase;">
+        BIPONIQ
+      </div>
+      <p style="color: #64748b; font-size: 14px; margin-top: 8px; font-weight: 500; margin-bottom: 0;">Affiliate Partner
+        Program</p>
+    </div>
+
+    <!-- Main Content -->
+    <h3 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-top: 0; margin-bottom: 16px;">
+      Hello <%= name %>,
+    </h3>
+
+    <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 24px;">
+      Congratulations! You have been registered as an affiliate partner on our platform. A coupon code has been
+      specifically created for you. You can share this coupon code with your audience to start earning commissions.
+    </p>
+
+    <!-- Coupon Box -->
+    <div style="
+      background-color: #f0fdf4;
+      border: 2px dashed #86efac;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 30px;
+    ">
+      <span
+        style="font-size: 13px; font-weight: 700; color: #16a34a; text-transform: uppercase; letter-spacing: 0.05em;">Your
+        Coupon Code</span>
+      <h1 style="font-size: 32px; font-weight: 800; color: #166534; margin: 8px 0; letter-spacing: 0.05em;">
+        <%= couponCode %>
+      </h1>
+      <p style="font-size: 13px; color: #16a34a; margin: 0; font-weight: 500;">Share this with your followers to get
+        referral benefits!</p>
+    </div>
+
+    <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 24px;">
+      To track your commissions, view analytics, and manage your payouts, please set up your account password and log in
+      to the portal using the link below:
+    </p>
+
+    <!-- CTA Button -->
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="<%= setupUrl %>" target="_blank" style="
+        background-color: #00BC7D;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 14px 30px;
+        font-size: 16px;
+        font-weight: 700;
+        border-radius: 10px;
+        display: inline-block;
+        box-shadow: 0 4px 10px rgba(0, 188, 125, 0.25);
+        transition: all 0.2s ease-in-out;
+      ">
+        Set Password & Login
+      </a>
+    </div>
+
+    <p
+      style="font-size: 13px; line-height: 1.5; color: #94a3b8; margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px;">
+      If the button above does not work, copy and paste this URL into your browser:<br>
+      <a href="<%= setupUrl %>" target="_blank"
+        style="color: #00BC7D; text-decoration: underline; word-break: break-all;">
+        <%= setupUrl %>
+      </a>
+    </p>
+
+    <p style="font-size: 14px; color: #64748b; margin-top: 24px;">
+      If you did not request this, please ignore this email.
+    </p>
+
+    <!-- Footer -->
+    <div
+      style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #f1f5f9; font-size: 12px; color: #94a3b8;">
+      &copy; <%= new Date().getFullYear() %> Biponiq Inc. All rights reserved.
+    </div>
+
+  </div>
+
+</body>
+
+</html>

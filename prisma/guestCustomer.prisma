@@ -1,0 +1,10 @@
+model GuestCustomer {
+  id        String   @id @default(uuid())
+  name      String
+  email     String?
+  phone     String
+  addressId String
+  createdAt DateTime @default(now())
+  address   Address  @relation(fields: [addressId], references: [id])
+  orders    Order[]
+}

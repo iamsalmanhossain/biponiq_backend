@@ -1,0 +1,11 @@
+model PixelEvent {
+  id        String   @id @default(uuid())
+  vendorId  String
+  eventName String
+  url       String?
+  ip        String?
+  country   String?
+  city      String?
+  createdAt DateTime @default(now())
+  vendor    Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+}

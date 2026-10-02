@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; background:#f5f5f5; padding:20px;">
+
+  <div style="
+    max-width:600px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+  ">
+
+    <h2 style="
+      text-align:center;
+    ">
+      🔐 Security Alert
+    </h2>
+
+
+    <p>
+      Hello,
+    </p>
+
+
+    <p>
+      We noticed a new login to your account.
+    </p>
+
+
+    <div style="
+      background:#f8f9fa;
+      padding:15px;
+      border-radius:8px;
+      margin:20px 0;
+    ">
+
+      <p style="margin:0;">
+        <strong>Login Email:</strong>
+        <%= email %>
+      </p>
+
+      <p style="margin:10px 0 0;">
+        <strong>Time:</strong>
+        <%= new Date().toLocaleString() %>
+      </p>
+
+    </div>
+
+
+    <p>
+      If this login was made by you, you can safely ignore this email.
+    </p>
+
+
+    <p style="
+      color:#d9534f;
+    ">
+      If you don't recognize this activity,
+      please reset your password immediately and secure your account.
+    </p>
+
+
+    <br>
+
+    <p>
+      Stay safe,<br>
+      <strong>Our Team</strong>
+    </p>
+
+
+  </div>
+
+</body>
+</html>

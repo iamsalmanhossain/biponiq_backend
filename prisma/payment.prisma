@@ -1,0 +1,29 @@
+model Payment {
+  id            String        @id @default(uuid())
+  orderId       String
+  transactionId String        @unique
+  amount        Float
+  paymentMethod PaymentMethod
+  paymentStatus PaymentStatus @default(PENDING)
+  gatewayData   Json?
+  paymentDate   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  order         Order         @relation(fields: [orderId], references: [id])
+
+  @@map("payments")
+}
+
+model PaymentResultToken {
+  id              String            @id @default(uuid())
+  transactionType PaymentResultType
+  transactionId   String
+  tokenHash       String            @unique
+  expiresAt       DateTime
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@unique([transactionType, transactionId])
+  @@index([expiresAt])
+  @@map("payment_result_tokens")
+}

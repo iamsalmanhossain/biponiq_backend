@@ -1,0 +1,20 @@
+model CustomDomain {
+  id       String @id @default(uuid())
+  domain   String @unique
+  vendorId String @unique
+
+  vendor          Vendor           @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  purchasedDomain PurchasedDomain? @relation("PurchasedDomainCustomDomain")
+
+  status DomainStatus @default(PENDING)
+
+  txtVerificationToken String?
+  cloudflareId         String? @unique
+  cloudflareStatus     String?
+  cloudflareWwwId      String? @unique
+  cloudflareWwwStatus  String?
+  verificationRecords  Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

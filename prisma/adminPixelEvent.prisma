@@ -1,0 +1,10 @@
+model AdminPixelEvent {
+  id         String   @id @default(uuid())
+  adminId    String
+  eventName  String
+  eventData  Json?    
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  admin      Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+}

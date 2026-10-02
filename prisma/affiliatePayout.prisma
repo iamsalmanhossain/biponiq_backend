@@ -1,0 +1,17 @@
+model AffiliatePayout {
+  id            String  @id @default(uuid())
+  affiliateId   String
+  amount        Float
+  methodType    String
+  transactionId String?
+
+  status               String   @default("PENDING")
+  payoutDate           DateTime @default(now())
+  gatewayResponse      String?
+  gatewayTransactionId String?
+  updatedAt            DateTime @default(now()) @updatedAt
+
+  affiliate Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
+  @@map("affiliate_payouts")
+}

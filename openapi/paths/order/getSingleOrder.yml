@@ -1,0 +1,43 @@
+getSingleOrder:
+  operationId: getSingleOrder
+
+  security:
+    - BearerAuth: []
+
+  tags:
+    - Order
+
+  summary: Get Single Order
+
+  description: Retrieve a single order by order id
+
+  parameters:
+    - in: path
+      name: id
+      required: true
+
+      schema:
+        type: string
+
+      example: 000e7811-84e9-42c2-80f5-24f239ce0002
+
+  responses:
+    "200":
+      description: Order retrieved successfully
+
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/responses/order.yml#/SingleOrderResponse'
+
+    "401":
+      $ref: '../../components/responses/common.yml#/Unauthorized'
+
+    "403":
+      description: Forbidden
+
+    "404":
+      description: Order not found
+
+    "500":
+      $ref: '../../components/responses/common.yml#/ServerError'

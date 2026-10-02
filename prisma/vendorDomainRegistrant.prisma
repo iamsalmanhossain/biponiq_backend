@@ -1,0 +1,26 @@
+model VendorDomainRegistrant {
+  id       String @id @default(uuid())
+  vendorId String @unique
+
+  firstName        String
+  lastName         String
+  organizationName String?
+
+  address1      String
+  city          String
+  stateProvince String
+  postalCode    String
+  country       String
+
+  phone        String
+  emailAddress String
+
+  confirmedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vendor Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@map("vendor_domain_registrants")
+}

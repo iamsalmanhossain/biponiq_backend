@@ -1,0 +1,358 @@
+SubscriptionPlanType:
+  type: string
+  enum:
+    - FREE_TRIAL
+    - INSTALLMENT
+    - STANDARD
+    - MEDIUM
+    - PREMIUM
+  example: STANDARD
+
+VendorSubscriptionStatus:
+  type: string
+  enum:
+    - TRIAL
+    - ACTIVE
+    - PENDING_PAYMENT
+    - EXPIRED
+    - CANCELLED
+  example: ACTIVE
+
+SubscriptionPaymentPurpose:
+  type: string
+  enum:
+    - SUBSCRIPTION_PLAN
+    - INSTALLMENT_FEE
+  example: SUBSCRIPTION_PLAN
+
+SubscriptionPaymentMethod:
+  type: string
+  enum:
+    - SSLCOMMERZ
+  example: SSLCOMMERZ
+
+PaymentStatus:
+  type: string
+  enum:
+    - PENDING
+    - PAID
+    - FAILED
+    - CANCELLED
+  example: PENDING
+
+CreateSubscriptionPlanRequest:
+  type: object
+  required:
+    - name
+    - type
+    - price
+    - durationDays
+  properties:
+    name:
+      type: string
+      minLength: 2
+      example: Standard Plan
+    type:
+      $ref: '#/SubscriptionPlanType'
+    price:
+      type: number
+      minimum: 0
+      example: 999
+    durationDays:
+      type: integer
+      minimum: 1
+      example: 30
+    isActive:
+      type: boolean
+      example: true
+    isTrial:
+      type: boolean
+      example: false
+    displayOrder:
+      type: integer
+      minimum: 0
+      example: 1
+    isMostPopular:
+      type: boolean
+      example: false
+    description:
+      type: string
+      example: Basic monthly subscription plan for vendors
+
+UpdateSubscriptionPlanRequest:
+  type: object
+  properties:
+    name:
+      type: string
+      minLength: 2
+      example: Updated Standard Plan
+    price:
+      type: number
+      minimum: 0
+      example: 1099
+    durationDays:
+      type: integer
+      minimum: 1
+      example: 30
+    isActive:
+      type: boolean
+      example: true
+    isTrial:
+      type: boolean
+      example: false
+    displayOrder:
+      type: integer
+      minimum: 0
+      example: 1
+    isMostPopular:
+      type: boolean
+      example: true
+    description:
+      type: string
+      example: Updated monthly subscription plan
+
+CheckoutSubscriptionRequest:
+  type: object
+  required:
+    - planId
+  properties:
+    planId:
+      type: string
+      example: 41adceac-46fc-44f4-94c0-d5f945b127b8
+
+SubscriptionPlan:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+      example: 7f4df13e-8b4f-4cb3-bfc1-5570b3c32f21
+    name:
+      type: string
+      example: Standard Plan
+    type:
+      $ref: '#/SubscriptionPlanType'
+    displayOrder:
+      type: integer
+      minimum: 0
+      example: 1
+    isMostPopular:
+      type: boolean
+      example: true
+    price:
+      type: number
+      example: 999
+    durationDays:
+      type: integer
+      example: 30
+    isActive:
+      type: boolean
+      example: true
+    isTrial:
+      type: boolean
+      example: false
+    description:
+      type: string
+      nullable: true
+      example: Basic monthly subscription plan for vendors
+    createdAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T10:00:00.000Z'
+    updatedAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T10:00:00.000Z'
+
+SubscriptionPayment:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+      example: 6a4d1b8e-11d4-4e36-a7e0-3d3f48340a11
+    vendorId:
+      type: string
+      format: uuid
+      example: 90656f9f-32a6-4c83-9c5c-9a8c8afc3b9a
+    subscriptionId:
+      type: string
+      format: uuid
+      nullable: true
+      example: c2df2a6a-20ef-40a7-bad8-c8ee4fbf50a4
+    amount:
+      type: number
+      example: 999
+    transactionId:
+      type: string
+      nullable: true
+      example: SUB-TXN-1781114175634
+    paymentMethodSchema:
+      $ref: '#/SubscriptionPaymentMethod'
+    paymentStatus:
+      $ref: '#/PaymentStatus'
+    purpose:
+      $ref: '#/SubscriptionPaymentPurpose'
+    note:
+      type: string
+      nullable: true
+      example: SSLCommerz payment note
+    paidAt:
+      type: string
+      format: date-time
+      nullable: true
+      example: '2026-06-10T10:15:00.000Z'
+    createdAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T10:00:00.000Z'
+    updatedAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T10:15:00.000Z'
+
+VendorSubscription:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+      example: c2df2a6a-20ef-40a7-bad8-c8ee4fbf50a4
+    vendorId:
+      type: string
+      format: uuid
+      example: 90656f9f-32a6-4c83-9c5c-9a8c8afc3b9a
+    planId:
+      type: string
+      format: uuid
+      example: 7f4df13e-8b4f-4cb3-bfc1-5570b3c32f21
+    status:
+      $ref: '#/VendorSubscriptionStatus'
+    startDate:
+      type: string
+      format: date-time
+      nullable: true
+      example: '2026-06-10T10:15:00.000Z'
+    endDate:
+      type: string
+      format: date-time
+      nullable: true
+      example: '2026-07-10T10:15:00.000Z'
+    paidAt:
+      type: string
+      format: date-time
+      nullable: true
+      example: '2026-06-10T10:15:00.000Z'
+    amountPaid:
+      type: number
+      example: 999
+    createdAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T10:00:00.000Z'
+    updatedAt:
+      type: string
+      format: date-time
+      example: '2026-06-10T10:15:00.000Z'
+    plan:
+      $ref: '#/SubscriptionPlan'
+    payments:
+      type: array
+      items:
+        $ref: '#/SubscriptionPayment'
+
+SubscriptionPlanResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Subscription plan created successfully
+    data:
+      $ref: '#/SubscriptionPlan'
+
+SubscriptionPlanListResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Subscription plans retrieved successfully
+    data:
+      type: array
+      items:
+        $ref: '#/SubscriptionPlan'
+
+VendorSubscriptionResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Vendor subscription retrieved successfully
+    data:
+      type: object
+      nullable: true
+      allOf:
+        - $ref: '#/VendorSubscription'
+
+TrialStatusResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Trial status retrieved successfully
+    data:
+      type: object
+      properties:
+        hasUsedFreeTrial:
+          type: boolean
+          example: true
+
+VendorSubscriptionListResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Vendor subscriptions retrieved successfully
+    data:
+      type: array
+      items:
+        $ref: '#/VendorSubscription'
+
+CheckoutSubscriptionResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    message:
+      type: string
+      example: Subscription checkout created successfully
+    data:
+      type: object
+      properties:
+        subscription:
+          $ref: '#/VendorSubscription'
+        paymentId:
+          type: string
+          format: uuid
+          example: 6a4d1b8e-11d4-4e36-a7e0-3d3f48340a11
+        transactionId:
+          type: string
+          example: SUB-TXN-1781114175634
+        gatewayPageURL:
+          type: string
+          example: https://sandbox.sslcommerz.com/EasyCheckOut/test-session

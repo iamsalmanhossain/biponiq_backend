@@ -1,0 +1,50 @@
+name: Check Code Quality
+
+on:
+  pull_request:
+    branches:
+      - development
+      - main
+    types: [opened, synchronize, reopened]
+
+  push:
+    branches:
+      - main
+      - development
+      
+jobs:
+  code-quality-check:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: pnpm prisma generate
+
+      - name: Format Check
+        run: pnpm run format:check
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Type Check
+        run: pnpm run type:check
+
+      - name: Build
+        run: pnpm run build

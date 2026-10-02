@@ -1,0 +1,64 @@
+model Coupon {
+  id                       String                 @id @default(uuid())
+  code                     String                 @unique
+  discountType             CouponDiscountType
+  discountValue            Float
+  maxDiscountAmount        Float?
+  minimumAmount            Float?
+  startsAt                 DateTime
+  expiresAt                DateTime
+  usageLimit               Int?
+  usedCount                Int                    @default(0)
+  perUserLimit             Int?                   @default(1)
+  isActive                 Boolean                @default(true)
+  createdByAdminId         String?
+  affiliateId              String?
+  affiliate                Affiliate?             @relation(fields: [affiliateId], references: [id])
+  affiliateCommissionType  CouponDiscountType     @default(PERCENTAGE)
+  affiliateCommissionValue Float                  @default(0)
+  createdAt                DateTime               @default(now())
+  updatedAt                DateTime               @updatedAt
+  isDeleted                Boolean                @default(false)
+  deletedAt                DateTime?
+  applicablePlans          CouponApplicablePlan[]
+  usages                   CouponUsage[]
+  payments                 SubscriptionPayment[]
+
+  @@index([code])
+  @@index([isActive])
+  @@index([startsAt])
+  @@index([expiresAt])
+  @@map("coupons")
+}
+
+model CouponApplicablePlan {
+  id        String           @id @default(uuid())
+  couponId  String
+  planId    String
+  createdAt DateTime         @default(now())
+  coupon    Coupon           @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  plan      SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([couponId, planId])
+  @@index([couponId])
+  @@index([planId])
+  @@map("coupon_applicable_plans")
+}
+
+model CouponUsage {
+  id                    String              @id @default(uuid())
+  couponId              String
+  vendorId              String
+  subscriptionPaymentId String
+  discountAmount        Float
+  usedAt                DateTime            @default(now())
+  coupon                Coupon              @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  subscriptionPayment   SubscriptionPayment @relation(fields: [subscriptionPaymentId], references: [id], onDelete: Cascade)
+  vendor                Vendor              @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@unique([couponId, subscriptionPaymentId])
+  @@index([couponId])
+  @@index([vendorId])
+  @@index([subscriptionPaymentId])
+  @@map("coupon_usages")
+}

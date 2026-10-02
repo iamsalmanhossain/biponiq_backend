@@ -1,0 +1,248 @@
+getAllVendor:
+  security:
+    - BearerAuth: []
+
+  operationId: getAllVendor
+  tags:
+    - Admin Dashboard
+
+  summary: Get All Vendors
+  description: Retrieve a list of all vendors in the system.
+
+  parameters:
+    - $ref: '../components/parameters/pagination.yml#/page'
+    - $ref: '../components/parameters/pagination.yml#/limit'
+
+  responses:
+    '200':
+      description: Vendors retrieved successfully
+      content:
+        application/json:
+          example:
+            success: true
+            message: Vendors retrieved successfully
+            data:
+              - id: 'ac7cb1fe-4894-499d-938f-c0855444d3a1'
+                shopName: 'Salman'
+                shopLogo: 'https://via.placeholder.com/300'
+                subDomain: 'salman-shop'
+                accountStatus: 'ACTIVE'
+                user:
+                  name: 'Md. Salman Hossain Updated'
+                  email: 'salman@example.com'
+                  phone: '01712345675'
+                  role: 'VENDOR'
+
+    '400':
+      description: Bad Request
+    '401':
+      description: Unauthorized
+    '403':
+      description: Forbidden
+    '404':
+      description: Not Found
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+updateVendorStatus:
+  security:
+    - BearerAuth: []
+
+  operationId: updateVendorStatus
+  tags:
+    - Admin Dashboard
+
+  summary: Update Vendor Status
+  description: Update vendor account status.
+
+  parameters:
+    - $ref: '../components/parameters/vendor.yml#/VendorId'
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            accountStatus:
+              $ref: '../components/schemas/vendor.yml#/VendorAccountStatus'
+          required:
+            - accountStatus
+        example:
+          accountStatus: ACTIVE
+
+  responses:
+    '200':
+      description: Vendor status updated successfully
+      content:
+        application/json:
+          example:
+            success: true
+            message: Vendor status updated successfully
+            data:
+              id: '3098e065-f60c-4a9c-a5d2-8aac400c4ef2'
+              accountStatus: 'SUSPENDED'
+
+    '400':
+      description: Bad Request
+
+    '401':
+      description: Unauthorized
+
+    '404':
+      $ref: '../components/responses/vendor.yml#/VendorNotFound'
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+deleteVendorProfile:
+  security:
+    - BearerAuth: []
+
+  operationId: adminDeleteVendorProfile
+  tags:
+    - Admin Dashboard
+
+  summary: Delete Vendor Profile
+  description: Soft delete vendor profile.
+
+  parameters:
+    - $ref: '../components/parameters/vendor.yml#/VendorId'
+
+  responses:
+    '200':
+      description: Vendor deleted successfully
+      content:
+        application/json:
+          example:
+            success: true
+            message: Vendor deleted successfully
+            data:
+              id: '1b5c3231-f001-4fe9-a531-a0fffe2633c5'
+              isDeleted: true
+
+    '400':
+      description: Bad Request
+    '401':
+      description: Unauthorized
+    '404':
+      $ref: '../components/responses/vendor.yml#/VendorNotFound'
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+getAllOrders:
+  security:
+    - BearerAuth: []
+
+  operationId: getAllOrders
+  tags:
+    - Admin Dashboard
+
+  summary: Get All Orders
+  description: Retrieve all orders in system.
+
+  parameters:
+    - $ref: '../components/parameters/pagination.yml#/page'
+    - $ref: '../components/parameters/pagination.yml#/limit'
+
+  responses:
+    '200':
+      description: Orders retrieved successfully
+      content:
+        application/json:
+          example:
+            success: true
+            message: Orders retrieved successfully
+            data:
+              - id: 'c4ac26cc-78b1-45b9-abb5-49307aafa3eb'
+                totalPrice: 1419.99
+                status: 'CONFIRMED'
+                customerName: 'Mahdi Hasan'
+                customerPhone: '01880230924'
+                customerEmail: 'mahdi@example.com'
+                createdAt: '2026-06-10T17:56:15.282Z'
+                updatedAt: '2026-06-10T17:57:08.717Z'
+
+    '400':
+      description: Bad Request
+    '401':
+      description: Unauthorized
+    '404':
+      description: Not Found
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+getOrderStats:
+  security:
+    - BearerAuth: []
+
+  operationId: getOrderStats
+  tags:
+    - Admin Dashboard
+
+  summary: Get Order Statistics
+  description: Get vendor/order statistics.
+
+  parameters:
+    - $ref: '../components/parameters/vendor.yml#/VendorId'
+
+  responses:
+    '200':
+      description: Order statistics retrieved successfully
+      content:
+        application/json:
+          example:
+            success: true
+            message: get vendor stats successful
+            result:
+              vendorId: '3098e065-f60c-4a9c-a5d2-8aac400c4ef2'
+              shopName: 'Nazmul Tech Store'
+              status: 'ACTIVE'
+              totalOrders: 8
+              totalEarnings: 0
+              productCount: 1
+
+    '400':
+      description: Bad Request
+    '401':
+      description: Unauthorized
+    '404':
+      description: Not Found
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+restoreVendorProfile:
+  security:
+    - BearerAuth: []
+
+  operationId: restoreVendorProfile
+  tags:
+    - Admin Dashboard
+
+  summary: Restore Vendor Profile
+  description: Restore soft-deleted vendor.
+
+  parameters:
+    - $ref: '../components/parameters/vendor.yml#/VendorId'
+
+  responses:
+    '200':
+      description: Vendor restored successfully
+      content:
+        application/json:
+          example:
+            success: true
+            message: Vendor restored successfully
+            data:
+              id: '0bef8e9c-f52a-4c7a-bd12-89af19a70656'
+              isDeleted: false
+
+    '400':
+      description: Bad Request
+    '401':
+      description: Unauthorized
+    '404':
+      $ref: '../components/responses/vendor.yml#/VendorNotFound'
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'

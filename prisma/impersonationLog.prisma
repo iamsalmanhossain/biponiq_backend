@@ -1,0 +1,13 @@
+// ImpersonationLog — admin কখন কোন vendor account এ login করেছে তার audit trail
+model ImpersonationLog {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  // কোন admin করেছে
+  adminId   String
+  adminUser User     @relation("AdminImpersonations", fields: [adminId], references: [id], onDelete: Cascade)
+
+  // কোন vendor এর account এ ঢুকেছে
+  vendorId  String
+  vendor    Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+}

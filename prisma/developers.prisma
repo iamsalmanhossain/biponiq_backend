@@ -1,0 +1,33 @@
+model DeveloperPage {
+  id           String      @id @default(uuid())
+  title        String
+  slug         String      @unique
+  description  String?
+  displayOrder Int         @default(0)
+  developers   Developer[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([displayOrder])
+  @@map("developer_pages")
+}
+
+model Developer {
+  id           String        @id @default(uuid())
+  name         String
+  role         String
+  image        String?
+  imageKey     String?
+  bio          String?
+  githubUrl    String?
+  linkedinUrl  String?
+  displayOrder Int           @default(0)
+  pageId       String
+  page         DeveloperPage @relation(fields: [pageId], references: [id], onDelete: Restrict)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([pageId])
+  @@index([displayOrder])
+  @@map("developers")
+}

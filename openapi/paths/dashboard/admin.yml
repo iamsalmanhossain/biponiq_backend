@@ -1,0 +1,132 @@
+adminDashboardStats:
+  security:
+    - BearerAuth: []
+  operationId: adminDashboardStats
+  tags:
+    - Admin Dashboard
+  summary: Get Admin Dashboard Statistics
+  description: Retrieve statistics and metrics for the admin dashboard.
+  responses:
+    '200':
+      description: Admin dashboard statistics retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/dashboard/admin.yml#/AdminDashboardStats'
+    '401':
+      $ref: '../../components/responses/common.yml#/Unauthorized'
+    '500':
+      $ref: '../../components/responses/common.yml#/ServerError'
+
+getVendorList:
+  security:
+    - BearerAuth: []
+  operationId: getVendorList
+  tags:
+    - Admin Dashboard
+  summary: Get Admin Dashboard Vendor List
+  description: Retrieve a paginated list of vendors for the admin dashboard.
+  parameters:
+    - $ref: '../../components/parameters/pagination.yml#/page'
+    - $ref: '../../components/parameters/pagination.yml#/limit'
+    - name: status
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [ACTIVE, PENDING, SUSPENDED, BLOCKED]
+      description: Filter vendors by account status
+    - name: division
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Filter vendors by division name
+    - name: district
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Filter vendors by district name
+  responses:
+    '200':
+      description: Vendor list retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/dashboard/admin.yml#/VendorListResponse'
+    '401':
+      $ref: '../../components/responses/common.yml#/Unauthorized'
+    '500':
+      $ref: '../../components/responses/common.yml#/ServerError'
+
+getGuestCustomerList:
+  security:
+    - BearerAuth: []
+  operationId: getGuestCustomerList
+  tags:
+    - Admin Dashboard
+  summary: Get Admin Dashboard Guest Customer List
+  description: Retrieve a paginated list of guest customers for the admin dashboard.
+  parameters:
+    - $ref: '../../components/parameters/pagination.yml#/page'
+    - $ref: '../../components/parameters/pagination.yml#/limit'
+    - name: division
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Filter customers by division name
+    - name: district
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Filter customers by district name
+  responses:
+    '200':
+      description: Customer list retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/dashboard/admin.yml#/CustomerListResponse'
+    '401':
+      $ref: '../../components/responses/common.yml#/Unauthorized'
+    '500':
+      $ref: '../../components/responses/common.yml#/ServerError'
+
+updateAdminAccountStatus:
+  security:
+    - BearerAuth: []
+  operationId: updateAdminAccountStatus
+  tags:
+    - Admin Dashboard
+  summary: Update Admin Account Status
+  description: Update the account status of an admin user.
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: The ID of the admin user to update
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/dashboard/admin.yml#/AdminAccountStatusUpdateRequest'
+  responses:
+    '200':
+      description: Admin account status updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/dashboard/admin.yml#/AdminAccountStatusUpdateResponse'
+    '400':
+      $ref: '../../components/responses/common.yml#/ValidationError'
+    '401':
+      $ref: '../../components/responses/common.yml#/Unauthorized'
+    '500':
+      $ref: '../../components/responses/common.yml#/ServerError'

@@ -1,0 +1,406 @@
+ImageUpload:
+  security:
+    - BearerAuth: []
+
+  operationId: uploadProductImages
+
+  tags:
+    - Image Upload
+
+  summary: Upload product images
+
+  description: |
+    Upload product images for a vendor product.
+
+    Rules:
+      - Authentication required
+      - Maximum 5 images per request
+      - Supported formats: JPG, JPEG, PNG, WEBP
+      - Maximum file size: 2 MB per image
+
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          $ref: '../components/schemas/upload.yml#/UploadImageProduct'
+
+  responses:
+    '200':
+      description: Images uploaded successfully
+
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/upload.yml#/UploadImageResponse'
+
+    '400':
+      description: Invalid file format or upload limit exceeded
+
+    '401':
+      description: Unauthorized
+
+    '413':
+      description: File size too large
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+GetAllImages:
+  security: []
+
+  operationId: getAllImages
+
+  tags:
+    - Image Upload
+
+  summary: Get all uploaded images
+
+  description: |
+    Retrieve all uploaded product images.
+
+    Returns image metadata including:
+    - Product ID
+    - Image URL
+    - Alternative text
+    - Created and updated timestamps
+
+  responses:
+    '200':
+      description: Images retrieved successfully
+
+      content:
+        application/json:
+          schema:
+            type: object
+
+            properties:
+              success:
+                type: boolean
+
+              message:
+                type: string
+
+              data:
+                type: array
+
+                items:
+                  $ref: '../components/schemas/upload.yml#/Images'
+
+    '404':
+      description: No images found
+
+      content:
+        application/json:
+          example:
+            success: false
+            message: No images found
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+GetProductRelatedImages:
+  security: []
+
+  operationId: getProductRelatedImages
+
+  tags:
+    - Image Upload
+
+  summary: Get all images for a specific product
+
+  description: |
+    Retrieve all uploaded images that belong to a specific product.
+
+    Returns:
+    - Product information
+    - All related images
+    - Total image count
+
+  parameters:
+    - in: path
+      name: id
+      required: true
+      description: Product ID
+      schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+
+  responses:
+    '200':
+      description: Product images retrieved successfully
+
+      content:
+        application/json:
+          schema:
+            type: object
+
+            properties:
+              success:
+                type: boolean
+                example: true
+
+              message:
+                type: string
+                example: Product images retrieved successfully
+
+              data:
+                type: object
+
+                properties:
+                  product:
+                    type: object
+
+                    properties:
+                      id:
+                        type: string
+                        example: 550e8400-e29b-41d4-a716-446655440000
+
+                      name:
+                        type: string
+                        example: Nike Air Max 270
+
+                  totalImages:
+                    type: integer
+                    example: 3
+
+                  images:
+                    type: array
+
+                    items:
+                      $ref: '../components/schemas/upload.yml#/Images'
+
+    '404':
+      description: Product not found
+
+      content:
+        application/json:
+          example:
+            success: false
+            message: Product not found
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+GetSingleImage:
+  security: []
+
+  operationId: getSingleImage
+
+  tags:
+    - Image Upload
+
+  summary: Get a single image by ID
+
+  description: |
+    Retrieve a specific image by its unique ID.
+
+    Returns image metadata along with basic information about the associated product.
+
+  parameters:
+    - in: path
+      name: id
+      required: true
+      description: Unique image ID
+      schema:
+        type: string
+        example: clzabc123
+
+  responses:
+    '200':
+      description: Image retrieved successfully
+
+      content:
+        application/json:
+          schema:
+            type: object
+
+            properties:
+              success:
+                type: boolean
+                example: true
+
+              message:
+                type: string
+                example: Image retrieved successfully
+
+              data:
+                $ref: '../components/schemas/upload.yml#/Images'
+
+    '404':
+      description: Image not found
+
+      content:
+        application/json:
+          example:
+            success: false
+            message: Image not found
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+UpdateImageMetaData:
+  security:
+    - BearerAuth: []
+
+  operationId: updateImageMetaData
+
+  tags:
+    - Image Upload
+
+  summary: Update image metadata
+
+  description: |
+    Update metadata for an existing image.
+
+    Currently supported fields:
+    - altText
+
+  parameters:
+    - in: path
+      name: id
+      required: true
+      description: Unique image ID
+      schema:
+        type: string
+        example: clzabc123
+
+  requestBody:
+    required: true
+
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/upload.yml#/UpdateImageRequest'
+
+  responses:
+    '200':
+      description: Image metadata updated successfully
+
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/upload.yml#/UpdateImageResponse'
+
+    '400':
+      description: Validation failed
+
+    '404':
+      description: Image not found
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+ReplaceImage:
+  security:
+    - BearerAuth: []
+
+  operationId: replaceImage
+
+  tags:
+    - Image Upload
+
+  summary: Replace an existing image
+
+  description: |
+    Replace an existing image with a new one.
+
+    The system will:
+    - Upload the new image to Cloudinary
+    - Update image metadata in the database
+    - Remove the previous image from Cloudinary
+
+    Rules:
+    - Authentication required
+    - Only one image can be uploaded
+    - Supported formats: JPG, JPEG, PNG, WEBP
+    - Maximum file size: 2 MB
+
+  parameters:
+    - in: path
+      name: id
+      required: true
+      description: Unique image ID
+      schema:
+        type: string
+        example: clzabc123
+
+  requestBody:
+    required: true
+
+    content:
+      multipart/form-data:
+        schema:
+          $ref: '../components/schemas/upload.yml#/ReplaceImageRequest'
+
+  responses:
+    '200':
+      description: Image replaced successfully
+
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/upload.yml#/ReplaceImageResponse'
+
+    '400':
+      description: Invalid file format or file size exceeded
+
+    '401':
+      description: Unauthorized
+
+    '404':
+      description: Image not found
+
+    '413':
+      description: File size too large
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'
+
+DeleteImage:
+  security:
+    - BearerAuth: []
+
+  operationId: deleteImage
+
+  tags:
+    - Image Upload
+
+  summary: Delete an image
+
+  description: |
+    Delete an image permanently.
+
+    The system will:
+    - Remove the image from Cloudinary
+    - Remove the image record from the database
+
+    This action cannot be undone.
+
+  parameters:
+    - in: path
+      name: id
+      required: true
+      description: Unique image ID
+      schema:
+        type: string
+        example: clzabc123
+
+  responses:
+    '200':
+      description: Image deleted successfully
+
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/upload.yml#/DeleteImageResponse'
+
+    '401':
+      description: Unauthorized
+
+    '404':
+      description: Image not found
+
+    '500':
+      $ref: '../components/responses/common.yml#/ServerError'

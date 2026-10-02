@@ -1,0 +1,20 @@
+model Admin {
+  id                    String                 @id @default(uuid())
+  userId                String                 @unique
+  avatar                String?
+  adminAccountStatus    AdminAccountStatus     @default(PENDING)
+  avatarKey             String?
+
+  pixelId               String?
+  pixelAccessToken      String?
+  pixelTestCode         String?
+
+  tiktokPixelId         String?
+  tiktokAccessToken     String?
+  tiktokTestCode        String?
+
+  adminPixelEvents      AdminPixelEvent[]
+  adminVisitorTrackings AdminVisitorTracking[]
+
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

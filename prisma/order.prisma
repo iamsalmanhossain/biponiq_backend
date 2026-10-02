@@ -1,0 +1,29 @@
+model Order {
+  id              String      @id @default(uuid())
+  orderId         String?     @unique @default(cuid())
+  guestCustomerId String
+  totalPrice      Float
+  status          OrderStatus @default(PENDING)
+  addressId       String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deliveryCharge  Float       @default(0)
+
+  customerEmail String?
+  customerName  String?
+  customerPhone String?
+
+  vendorCouponId   String?
+  affiliateEarning Float   @default(0)
+  discountAmount   Float   @default(0)
+  originalAmount   Float   @default(0)
+  vendorEarning    Float   @default(0)
+
+  address       Address       @relation(fields: [addressId], references: [id])
+  guestCustomer GuestCustomer @relation(fields: [guestCustomerId], references: [id])
+  vendorCoupon  VendorCoupon? @relation(fields: [vendorCouponId], references: [id])
+  items         OrderItem[]
+  payment       Payment[]
+  courierOrders CourierOrder[]
+}
+

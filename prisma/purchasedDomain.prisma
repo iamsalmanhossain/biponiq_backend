@@ -1,0 +1,30 @@
+model PurchasedDomain {
+  id                         String                @id @default(uuid())
+  vendorId                   String
+  domain                     String                @unique
+  extension                  String
+  registrationYears          Int                   @default(1)
+  registrationAmount         Float
+  subscriptionPaymentId      String                @unique
+  customDomainId             String?               @unique
+  status                     PurchasedDomainStatus @default(PAYMENT_PENDING)
+  registrationIdempotencyKey String                @unique
+  registrarOrderId           String?               @unique
+  failureCode                String?
+  failureMessage             String?
+  registrationAttempts       Int                   @default(0)
+  registeredAt               DateTime?
+  registrationExpiresAt      DateTime?
+  dnsConfiguredAt            DateTime?
+  createdAt                  DateTime              @default(now())
+  updatedAt                  DateTime              @updatedAt
+
+  vendor              Vendor              @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  subscriptionPayment SubscriptionPayment @relation(fields: [subscriptionPaymentId], references: [id], onDelete: Restrict)
+  customDomain        CustomDomain?       @relation("PurchasedDomainCustomDomain", fields: [customDomainId], references: [id], onDelete: SetNull)
+
+  @@index([vendorId])
+  @@index([status])
+  @@index([registrationExpiresAt])
+  @@map("purchased_domains")
+}

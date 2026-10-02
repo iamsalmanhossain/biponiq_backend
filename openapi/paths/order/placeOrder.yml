@@ -1,0 +1,36 @@
+placeOrder:
+  security: []
+  operationId: placeOrder
+
+  tags:
+    - Order
+
+  summary: Place Order
+
+  description: Create a new order
+
+  requestBody:
+    required: true
+
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/order.yml#/PlaceOrderRequest'
+
+  responses:
+    '201':
+      description: Order placed successfully
+
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/responses/order.yml#/OrderResponse'
+
+    '400':
+      description: Bad Request
+
+    '422':
+      $ref: '../../components/responses/common.yml#/ValidationError'
+
+    '500':
+      $ref: '../../components/responses/common.yml#/ServerError'

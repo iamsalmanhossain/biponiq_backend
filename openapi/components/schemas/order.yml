@@ -1,0 +1,303 @@
+CustomerInfo:
+  type: object
+
+  required:
+    - name
+    - phone
+    - email
+    - area
+    - districtName
+    - divisionName
+
+  properties:
+    name:
+      type: string
+      example: Refat
+
+    phone:
+      type: string
+      example: '01711223344'
+
+    email:
+      type: string
+      format: email
+      example: rahim@example.com
+
+    area:
+      type: string
+      example: Kaliganj, Gazipur
+
+    districtName:
+      type: string
+      example: Gazipur
+
+    divisionName:
+      type: string
+      example: Dhaka
+
+PaymentMethod:
+  type: string
+
+  enum:
+    - COD
+    - ONLINE
+
+  example: COD
+
+OrderItem:
+  type: object
+
+  required:
+    - productId
+    - quantity
+
+  properties:
+    productId:
+      type: string
+      format: uuid
+      example: 75f053a5-7b7c-4925-be14-69ee51c4d11d
+
+    quantity:
+      type: integer
+      example: 1
+
+PlaceOrderRequest:
+  type: object
+
+  required:
+    - customerInfo
+    - items
+
+  properties:
+    customerInfo:
+      $ref: '#/CustomerInfo'
+
+    items:
+      type: array
+
+      items:
+        $ref: '#/OrderItem'
+
+    paymentMethod:
+      $ref: '#/PaymentMethod'
+
+OrderAddress:
+  type: object
+
+  properties:
+    area:
+      type: string
+      example: Kaliganj, Gazipur
+
+    district:
+      type: object
+
+      properties:
+        name:
+          type: string
+          example: Gazipur
+
+    division:
+      type: object
+
+      properties:
+        name:
+          type: string
+          example: Dhaka
+
+OrderProduct:
+  type: object
+
+  properties:
+    id:
+      type: string
+      example: 75f053a5-7b7c-4925-be14-69ee51c4d11d
+
+    name:
+      type: string
+      example: Nokia 2000
+
+    slug:
+      type: string
+      example: nokia-2000
+
+    price:
+      type: number
+      example: 1999
+
+    vendorId:
+      type: string
+      example: a8d28ac8-f3e9-4714-9565-fdf6eca52c0e
+
+OrderItemResponse:
+  type: object
+
+  properties:
+    quantity:
+      type: integer
+      example: 1
+
+    price:
+      type: number
+      example: 1999
+
+    product:
+      $ref: '#/OrderProduct'
+
+Order:
+  type: object
+
+  properties:
+    id:
+      type: string
+      example: 95beb353-4b82-40d3-b75d-f38eda893c17
+
+    status:
+      type: string
+      example: PENDING
+
+    totalPrice:
+      type: number
+      example: 1999
+
+    customerName:
+      type: string
+      example: Refat
+
+    customerPhone:
+      type: string
+      example: '01711223344'
+
+    customerEmail:
+      type: string
+      example: rahim@example.com
+
+    address:
+      $ref: '#/OrderAddress'
+
+    createdAt:
+      type: string
+      format: date-time
+
+    items:
+      type: array
+
+      items:
+        $ref: '#/OrderItemResponse'
+
+    gatewayPageURL:
+      type: string
+      nullable: true
+      example: null
+
+PaginationMeta:
+  type: object
+
+  properties:
+    total:
+      type: integer
+      example: 12
+
+    page:
+      type: integer
+      example: 1
+
+    limit:
+      type: integer
+      example: 10
+
+    totalPages:
+      type: integer
+      example: 2
+
+    hasNextPage:
+      type: boolean
+      example: true
+
+    hasPrevPage:
+      type: boolean
+      example: false
+
+UpdateOrderStatusRequest:
+  type: object
+
+  required:
+    - status
+
+  properties:
+    status:
+      type: string
+
+      enum:
+        - PENDING
+        - CONFIRMED
+        - PROCESSING
+        - SHIPPED
+        - DELIVERED
+        - COMPLETED
+        - CANCELLED
+        - RETURNED
+        - REFUNDED
+        - FAILED
+
+      example: CONFIRMED
+
+UpdateOrderStatusData:
+  type: object
+
+  properties:
+    id:
+      type: string
+      example: 000e7811-84e9-42c2-80f5-24f239ce0002
+
+    guestCustomerId:
+      type: string
+      example: 21636bbb-d76a-4e56-b837-ee02da78179d
+
+    totalPrice:
+      type: number
+      example: 1999
+
+    status:
+      type: string
+      example: CONFIRMED
+
+    customerName:
+      type: string
+      example: Refat
+
+    customerPhone:
+      type: string
+      example: '01711223344'
+
+    customerEmail:
+      type: string
+      example: rahim@example.com
+
+    addressId:
+      type: string
+      example: e0143f32-625f-4bef-9470-88e0773291fc
+
+    createdAt:
+      type: string
+      format: date-time
+
+    updatedAt:
+      type: string
+      format: date-time
+
+PaymentInfo:
+  type: object
+
+  properties:
+    paymentMethod:
+      type: string
+      example: COD
+
+    paymentStatus:
+      type: string
+      example: PENDING
+
+    transactionId:
+      type: string
+      example: COD-1781101331373

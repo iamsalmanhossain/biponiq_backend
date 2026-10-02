@@ -1,0 +1,56 @@
+getAllOrderList:
+  operationId: getAllOrderList
+
+  security:
+    - BearerAuth: []
+
+  tags:
+    - Order
+
+  summary: Get All Orders
+
+  description: |
+    Retrieve orders based on authenticated user role.
+
+    Allowed Roles:
+    - ADMIN
+    - VENDOR
+
+    Role Behavior:
+    - ADMIN can view all orders.
+    - VENDOR can view only orders containing their own products.
+
+  parameters:
+    - in: query
+      name: page
+      required: false
+
+      schema:
+        type: integer
+        default: 1
+
+    - in: query
+      name: limit
+      required: false
+
+      schema:
+        type: integer
+        default: 10
+
+  responses:
+    "200":
+      description: Orders retrieved successfully
+
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/responses/order.yml#/OrderListResponse'
+
+    "401":
+      $ref: '../../components/responses/common.yml#/Unauthorized'
+
+    "403":
+      description: Forbidden
+
+    "500":
+      $ref: '../../components/responses/common.yml#/ServerError'

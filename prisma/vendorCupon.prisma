@@ -1,0 +1,34 @@
+model VendorCoupon {
+  id          String  @id @default(uuid())
+  code        String
+  vendorId    String
+  affiliateId String?
+
+  discountType      CouponDiscountType
+  discountValue     Float
+  maxDiscountAmount Float?
+  minimumAmount     Float?
+  startsAt          DateTime
+  expiresAt         DateTime
+  usageLimit        Int?
+  usedCount         Int                @default(0)
+  isActive          Boolean            @default(true)
+
+  affiliateCommissionType  CouponDiscountType @default(PERCENTAGE)
+  affiliateCommissionValue Float              @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vendor Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  affiliate Affiliate? @relation(fields: [affiliateId], references: [id], onDelete: SetNull)
+
+  orders              Order[]
+  applicableTemplates Template[] @relation("TemplateToVendorCoupon")
+
+  @@unique([code, vendorId])
+  @@index([vendorId])
+  @@index([affiliateId])
+  @@map("vendor_coupons")
+}

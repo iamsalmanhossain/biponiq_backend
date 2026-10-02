@@ -1,0 +1,7 @@
+model DeliveryCharge {
+  id            String @id @default(uuid())
+  vendorId      String @unique
+  insideCharge  Int    @default(60)
+  outsideCharge Int    @default(120)
+  vendor        Vendor @relation(fields: [vendorId], references: [id])
+}

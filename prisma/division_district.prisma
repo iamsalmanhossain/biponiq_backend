@@ -1,0 +1,14 @@
+model Division {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  addresses Address[]
+  districts District[]
+}
+
+model District {
+  id         String    @id @default(uuid())
+  name       String    @unique
+  divisionId String
+  addresses  Address[]
+  division   Division  @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+}

@@ -1,0 +1,42 @@
+trackOrder:
+  operationId: trackOrder
+
+  security: []
+
+  tags:
+    - Order
+
+  summary: Track Guest Orders
+
+  description: |
+    Public endpoint.
+
+    Track orders using guest customer token.
+
+  parameters:
+    - in: query
+      name: token
+      required: true
+
+      schema:
+        type: string
+
+      example: eb75bec8-ccf8-44c1-9f4a-93e9d3845176
+
+  responses:
+    "200":
+      description: Orders found
+
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/responses/order.yml#/TrackOrderResponse'
+
+    "400":
+      description: Guest token is required
+
+    "404":
+      description: No orders found for this tracking ID
+
+    "500":
+      $ref: '../../components/responses/common.yml#/ServerError'

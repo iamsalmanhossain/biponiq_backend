@@ -1,0 +1,19 @@
+model AffiliatePayoutMethod {
+  id            String  @id @default(uuid())
+  affiliateId   String
+  methodType    String
+  accountNumber String
+  accountName   String?
+  bankName      String?
+  branchName    String?
+  isDefault     Boolean @default(false)
+
+  gatewayAccountId String?
+  gatewayToken     String?
+
+  createdAt DateTime @default(now())
+
+  affiliate Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
+  @@map("affiliate_payout_methods")
+}

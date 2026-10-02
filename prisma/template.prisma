@@ -1,0 +1,10 @@
+model Template {
+  id            String         @id @default(uuid())
+  templateId    String         @unique
+  name          String
+  isActive      Boolean        @default(false)
+  tags          String[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  vendorCoupons VendorCoupon[] @relation("TemplateToVendorCoupon")
+}

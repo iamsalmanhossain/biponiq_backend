@@ -1,0 +1,162 @@
+model SubscriptionPlan {
+  id            String               @id @default(uuid())
+  name          String               @unique // English name
+  nameBn        String?              // Bangla name
+  type          SubscriptionPlanType @unique
+  isActive      Boolean              @default(true)
+  isTrial       Boolean              @default(false)
+  displayOrder  Int                  @default(0)
+  isMostPopular Boolean              @default(false)
+  visitorLimit  Int?
+  description   String?              // English description
+  descriptionBn String?              // Bangla description
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  prices         SubscriptionPlanPrice[]
+  subscriptions  VendorSubscription[]
+  couponPlans    CouponApplicablePlan[]
+  checkoutDrafts VendorCheckoutDraft[]
+
+  @@index([displayOrder])
+  @@map("subscription_plans")
+}
+
+model SubscriptionPlanPrice {
+  id              String                   @id @default(uuid())
+  planId          String
+  billingCycle    SubscriptionBillingCycle
+  price           Float
+  discountPercent Float                    @default(0)
+  durationDays    Int
+  isActive        Boolean                  @default(true)
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+  plan            SubscriptionPlan         @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, billingCycle])
+  @@index([planId])
+  @@map("subscription_plan_prices")
+}
+
+model VendorSubscription {
+  id                 String                   @id @default(uuid())
+  vendorId           String
+  planId             String
+  status             VendorSubscriptionStatus @default(PENDING_PAYMENT)
+  startDate          DateTime?
+  endDate            DateTime?
+  paidAt             DateTime?
+  amountPaid         Float                    @default(0)
+  visitorLimit       Int?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+  billingCycle       SubscriptionBillingCycle @default(MONTHLY)
+  cancelAtPeriodEnd  Boolean                  @default(false)
+  cancellationReason String?
+  cancelledAt        DateTime?
+
+  assignedByAdmin    Boolean                @default(false)
+  customDays         Int?
+
+  payments           SubscriptionPayment[]
+  plan               SubscriptionPlan         @relation(fields: [planId], references: [id])
+  vendor             Vendor                   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@index([planId])
+  @@map("vendor_subscriptions")
+}
+
+model SubscriptionPayment {
+  id             String                     @id @default(uuid())
+  vendorId       String
+  subscriptionId String?
+  amount         Float
+  transactionId  String?                    @unique
+  paymentMethod  PaymentMethod              @default(SSLCOMMERZ)
+  paymentStatus  PaymentStatus              @default(PENDING)
+  purpose        SubscriptionPaymentPurpose @default(SUBSCRIPTION_PLAN)
+  note           String?
+
+  billingCycle SubscriptionBillingCycle @default(MONTHLY)
+
+  couponId         String?
+  originalAmount   Float?
+  discountAmount   Float   @default(0)
+  finalAmount      Float?
+  affiliateEarning Float   @default(0)
+
+  isInstallmentIncluded Boolean @default(false)
+
+  isDomainIncluded Boolean @default(false)
+
+  domain                  String?
+  domainExtension         String?
+  domainRegistrationYears Int?
+
+  domainBaseRegistrationPriceUsd Float?
+  domainIcannFeeUsd              Float?
+  domainProviderPriceUsd         Float?
+  domainExchangeRate             Float?
+  domainMarkupPercent            Float?
+  domainRegistrationPriceBdt     Float?
+
+  domainRegistrantSnapshot Json?
+  domainQuotedAt           DateTime?
+  domainQuoteExpiresAt     DateTime?
+
+  gatewayData Json?
+  paidAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  subscription    VendorSubscription? @relation(fields: [subscriptionId], references: [id])
+  vendor          Vendor              @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  coupon          Coupon?             @relation(fields: [couponId], references: [id])
+  couponUsages    CouponUsage[]
+  purchasedDomain PurchasedDomain?
+  visitorLimitPackageId String?
+  visitorLimitPackage   VisitorLimitPackage? @relation(fields: [visitorLimitPackageId], references: [id])
+
+  @@index([vendorId])
+  @@index([subscriptionId])
+  @@index([couponId])
+  @@map("subscription_payments")
+}
+
+model VendorCheckoutDraft {
+  id           String                   @id @default(uuid())
+  vendorId     String                   @unique
+  planId       String
+  billingCycle SubscriptionBillingCycle
+  couponCode   String?
+
+  selectedDomain    String?
+  selectedExtension String?
+
+  domainRegistrationYears Int?
+
+  domainBaseRegistrationPriceUsd Float?
+  domainIcannFeeUsd              Float?
+  domainProviderPriceUsd         Float?
+  domainExchangeRate             Float?
+  domainMarkupPercent            Float?
+  domainRegistrationPriceBdt     Float?
+
+  domainQuotedAt       DateTime?
+  domainQuoteExpiresAt DateTime?
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vendor Vendor           @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  plan   SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@index([planId])
+  @@index([expiresAt])
+  @@index([domainQuoteExpiresAt])
+  @@map("vendor_checkout_drafts")
+}
