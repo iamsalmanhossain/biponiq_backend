@@ -1,12 +1,1 @@
-node_modules
-dist
-/generated/prisma
-.vercel
-redis.md
-cupon.md
-explain.md
-affiliate.md
-apiIntegration.md
-config.bat
-.env
-adminDashboardPlan.md
+
