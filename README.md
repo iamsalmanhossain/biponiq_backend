@@ -2,7 +2,10 @@
 
 > A comprehensive, scalable backend system for a full-featured e-commerce platform built with Node.js, Express, TypeScript, and Prisma.
 
+## 📚 Documentation & Resources
 
+- **[API Documentation (Swagger)](https://server-squad-backend.vercel.app/api-docs)** - Interactive API documentation
+- **[Database ERD Diagram](https://drive.google.com/file/d/1_g0M0EQUmHSQYJyhL1cu0IcKuk9uK6Hl/view)** - Database schema visualization
 
 ## 🔄 Recent Updates
 
